@@ -17,11 +17,11 @@ description: "Task list for In-Memory Todo App implementation"
 
 **Purpose**: Project initialization and core data model.
 
-- [ ] T001 Configure `pyproject.toml` with `typer` and `rich` dependencies in the `[project.dependencies]` section.**Crucial**: Add a `[project.scripts]` section with `start = "todo.main:app"` to enable `uv run start`.
+- [x] T001 Configure `pyproject.toml` with `typer` and `rich` dependencies in the `[project.dependencies]` section.**Crucial**: Add a `[project.scripts]` section with `start = "todo.main:app"` to enable `uv run start`.
 Success Condition: `uv pip install` successfully installs the dependencies.
-- [ ] T002 Create the source directory `src/todo/`. Success Condition: The directory `src/todo/` exists.
-- [ ] T003 Create an empty `src/todo/__init__.py` file. Success Condition: The file exists.
-- [ ] T004 [US1] Define the `Task` data model in `src/todo/models.py` using `typing.TypedDict` or `dataclasses.dataclass` as specified in `spec.md`. 
+- [x] T002 Create the source directory `src/todo/`. Success Condition: The directory `src/todo/` exists.
+- [x] T003 Create an empty `src/todo/__init__.py` file. Success Condition: The file exists.
+- [x] T004 [US1] Define the `Task` data model in `src/todo/models.py` using `typing.TypedDict` or `dataclasses.dataclass` as specified in `spec.md`. 
 Success Condition: The file contains the `Task` type with `id`, `title`, `description`, and `status` fields.
 
 **Checkpoint**: Human Review. The basic project structure and data model are in place.
@@ -32,11 +32,11 @@ Success Condition: The file contains the `Task` type with `id`, `title`, `descri
 
 **Purpose**: Implement the business logic for managing tasks in memory.
 
-- [ ] T005 Create the `TaskManager` class in `src/todo/manager.py` with an in-memory list to store tasks. Success Condition: The file and class exist.
-- [ ] T006 [US1] Implement the `add_task` method in `src/todo/manager.py`. It should handle ID generation (no reuse) and validation for empty titles. Success Condition: Calling the method adds a task to the in-memory list and returns the new task.
-- [ ] T007 [US2] Implement the `list_tasks` method in `src/todo/manager.py`. Success Condition: The method returns the current list of all tasks.
-- [ ] T008 [US3] Implement the `update_task_status` method in `src/todo/manager.py`. It should find a task by ID and update its status. Success Condition: Calling the method changes a task's status in the list.
-- [ ] T009 [US4] Implement the `delete_task` method in `src/todo/manager.py`. It should remove a task by ID. Success Condition: Calling the method removes the specified task from the list.
+- [x] T005 Create the `TaskManager` class in `src/todo/manager.py` with an in-memory list to store tasks. Success Condition: The file and class exist.
+- [x] T006 [US1] Implement the `add_task` method in `src/todo/manager.py`. It should handle ID generation (no reuse) and validation for empty titles. Success Condition: Calling the method adds a task to the in-memory list and returns the new task.
+- [x] T007 [US2] Implement the `list_tasks` method in `src/todo/manager.py`. Success Condition: The method returns the current list of all tasks.
+- [x] T008 [US3] Implement the `update_task_status` method in `src/todo/manager.py`. It should find a task by ID and update its status. Success Condition: Calling the method changes a task's status in the list.
+- [x] T009 [US4] Implement the `delete_task` method in `src/todo/manager.py`. It should remove a task by ID. Success Condition: Calling the method removes the specified task from the list.
 
 **Checkpoint**: Human Review. The `TaskManager` is complete and its methods can be unit tested.
 
@@ -46,12 +46,12 @@ Success Condition: The file contains the `Task` type with `id`, `title`, `descri
 
 **Purpose**: Create the user-facing command-line interface and main application loop.
 
-- [ ] T010 [US5] Set up main CLI entry point in `src/todo/main.py` using `typer` and the REPL loop. Success Condition: Running `uv run start` starts the REPL.
-- [ ] T011 [US5] Implement command parsing ("add", "list", "complete", "delete", "exit") in `src/todo/main.py`. Success Condition: The REPL correctly identifies and routes these commands.
-- [ ] T012 [US1] Integrate `TaskManager.add_task` with the "add" command in `src/todo/main.py`, including prompts for user input. Success Condition: The "add" command successfully creates a new task.
-- [ ] T013 [US2] Integrate `TaskManager.list_tasks` with the "list" command in `src/todo/main.py`. Success Condition: The "list" command retrieves tasks from the manager.
-- [ ] T014 [US3] Integrate `TaskManager.update_task_status` with the "complete" command in `src/todo/main.py`, including prompts for the task ID. Success Condition: The "complete" command updates a task's status.
-- [ ] T015 [US4] Integrate `TaskManager.delete_task` with the "delete" command in `src/todo/main.py`, including prompts for the task ID. Success Condition: The "delete" command removes a task.
+- [x] T010 [US5] Set up main CLI entry point in `src/todo/main.py` using `typer` and the REPL loop. Success Condition: Running `uv run start` starts the REPL.
+- [x] T011 [US5] Implement command parsing ("add", "list", "complete", "delete", "exit") in `src/todo/main.py`. Success Condition: The REPL correctly identifies and routes these commands.
+- [x] T012 [US1] Integrate `TaskManager.add_task` with the "add" command in `src/todo/main.py`, including prompts for user input. Success Condition: The "add" command successfully creates a new task.
+- [x] T013 [US2] Integrate `TaskManager.list_tasks` with the "list" command in `src/todo/main.py`. Success Condition: The "list" command retrieves tasks from the manager.
+- [x] T014 [US3] Integrate `TaskManager.update_task_status` with the "complete" command in `src/todo/main.py`, including prompts for the task ID. Success Condition: The "complete" command updates a task's status.
+- [x] T015 [US4] Integrate `TaskManager.delete_task` with the "delete" command in `src/todo/main.py`, including prompts for the task ID. Success Condition: The "delete" command removes a task.
 
 **Checkpoint**: Human Review. The CLI is functional, though with basic text output.
 
