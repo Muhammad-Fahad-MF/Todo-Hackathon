@@ -1,13 +1,13 @@
-# Implementation Plan: [FEATURE]
+# Implementation Plan: In-Memory Todo Console Application
 
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
+**Branch**: `001-in-memory-todo-app` | **Date**: 2026-01-01 | **Spec**: /specs/001-in-memory-todo-app/spec.md
 **Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
 
 **Note**: This template is filled in by the `/sp.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
 
 ## Summary
 
-[Extract from feature spec: primary requirement + technical approach from research]
+Develop a single-user, text-based CLI application in Python 3.13+ with strict type hints that runs a Read-Eval-Print Loop (REPL). The application will manage a list of tasks strictly in RAM, using a 'Modular REPL' architecture to separate Data Manager (logic) from CLI View (presentation). The 'rich' library will be used for all output formatting, and 'uv' for dependency management.
 
 ## Technical Context
 
@@ -18,26 +18,26 @@
 -->
 
 **Language/Version**: Python 3.13+
-**Primary Dependencies**: [e.g., rich, typer/click or NEEDS CLARIFICATION]
-**Storage**: In-Memory
-**Testing**: [e.g., pytest, unittest or NEEDS CLARIFICATION]
+**Primary Dependencies**: rich, uv, typer/click (for CLI parsing)
+**Storage**: In-Memory (global `List[Task]`)
+**Testing**: unittest (standard library for unit and integration tests)
 **Target Platform**: Console Application
 **Project Type**: Single Project (CLI)
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Performance Goals**: Not specified, focus on correctness and user experience for a single-user CLI application.
+**Constraints**: In-memory only persistence; no raw Python tracebacks; all source code in `src/`; `uv` for dependency management.
+**Scale/Scope**: Single-user, in-memory task management with basic CRUD operations.
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-- [ ] **Simplicity**: Is the proposed solution the simplest possible? (YAGNI)
-- [ ] **Type Safety**: Does the solution use Python 3.13+ type hints for all new functions and classes?
-- [ ] **User Experience**: Does the CLI output use `rich` for presentation?
-- [ ] **Modularity**: Is there a clear separation between data logic and UI?
-- [ ] **Storage**: Does the solution rely ONLY on in-memory storage?
-- [ ] **Directory Structure**: Is all new source code located within the `src/` directory?
-- [ ] **Dependencies**: Are new dependencies managed with `uv`?
+- [x] **Simplicity**: Is the proposed solution the simplest possible? (YAGNI)
+- [x] **Type Safety**: Does the solution use Python 3.13+ type hints for all new functions and classes?
+- [x] **User Experience**: Does the CLI output use `rich` for presentation?
+- [x] **Modularity**: Is there a clear separation between data logic and UI?
+- [x] **Storage**: Does the solution rely ONLY on in-memory storage?
+- [x] **Directory Structure**: Is all new source code located within the `src/` directory?
+- [x] **Dependencies**: Are new dependencies managed with `uv`?
 
 ## Project Structure
 

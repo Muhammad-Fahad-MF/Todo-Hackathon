@@ -1,55 +1,56 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# Phase 1 In-Memory Todo Console Application (Python) Constitution
+
+<!--
+Sync Impact Report:
+- Version change: 0.0.0 → 1.0.0
+- List of modified principles:
+  - [PRINCIPLE_1_NAME] → Simplicity
+  - [PRINCIPLE_2_NAME] → Type Safety
+  - [PRINCIPLE_3_NAME] → User Experience
+  - [PRINCIPLE_4_NAME] → Modularity
+- Added sections: Key Standards, Constraints, Success Criteria
+- Removed sections: Principles 5 and 6
+- Templates requiring updates:
+  - ✅ .specify/templates/plan-template.md
+  - ✅ .specify/templates/spec-template.md
+  - ✅ .specify/templates/tasks-template.md
+- Follow-up TODOs: None
+-->
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Simplicity
+Code should be strictly minimal and functional (YAGNI - You Aren't Gonna Need It).
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Type Safety
+Rigorous use of Python 3.13+ type hinting for all functions and classes.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. User Experience
+The CLI should use the 'rich' library for visual hierarchy (tables, colors) rather than plain print statements.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Modularity
+Separation of concerns between the data model (logic) and the user interface (view).
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+## Key Standards
+- **Language Version**: Python 3.13+
+- **Code Style**: PEP 8 compliance; use snake_case for functions/variables, PascalCase for classes.
+- **Documentation**: Google-style docstrings required for all modules, classes, and functions.
+- **Error Handling**: No raw crashes. Use try/except blocks to catch user input errors (e.g., non-integer IDs) and display friendly error messages.
+- **Data Structure**: Use a global List of Dictionaries or a Task Class for in-memory storage.
 
-### [PRINCIPLE_6_NAME]
+## Constraints
+- **Storage**: STRICTLY In-Memory only. Do not use SQLite, JSON files, or any external database persistence for this phase.
+- **Directory Structure**: All source code must reside in a `src/` folder.
+- **Dependencies**: Use 'uv' for dependency management (rich, typer/click).
+- **Testing**: Code must be testable (logic separated from input/output).
 
-
-[PRINCIPLE__DESCRIPTION]
-
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
-
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
-
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
-
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+## Success Criteria
+- Application starts and stops without errors.
+- Code passes static type checking.
+- The 5 core features (Add, Delete, Update, List, Complete) share a consistent UI style.
+- Repository structure includes src/, specs/, README.md, and GEMINI.md.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+This Constitution supersedes all other practices. Amendments require documentation, approval, and a migration plan. All pull requests and reviews must verify compliance with this constitution. Complexity must be justified. Use `GEMINI.md` for runtime development guidance.
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
-
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-01-01 | **Last Amended**: 2026-01-01
