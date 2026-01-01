@@ -9,11 +9,20 @@ app = typer.Typer()
 task_manager = TaskManager() # Instantiate TaskManager
 
 @app.command()
-def start():
-    """Starts the Todo application REPL."""
+def start() -> None:
+    """🚀 Starts the Interactive Todo REPL.
+
+    Available Commands inside the app:
+    - add "Title" "Description"
+    - list
+    - complete [ID]
+    - delete [ID]
+    - help
+    - exit
+    """
     welcome_panel = Panel(
-        "[bold blue]Welcome to the Todo App![/bold blue]\n\n"
-        "Type 'help' to see available commands.",
+        "[bold blue]Welcome to the Todo App![/bold blue]\n\n" \
+        "Type [bold cyan]'help'[/bold cyan] to see available commands.",
         title="[bold green]Todo CLI[/bold green]",
         border_style="green"
     )
@@ -31,13 +40,12 @@ def start():
 
             if command == "help":
                 menu_panel = Panel(
-                    "[bold]Commands:[/bold]\n"
-                    "  - [cyan]add[/cyan]: Add a new task.\n"
-
-                    "  - [cyan]list[/cyan]: List all tasks.\n"
-                    "  - [cyan]complete [ID][/cyan]: Mark a task as completed.\n"
-                    "  - [cyan]delete [ID][/cyan]: Delete a task.\n"
-                    "  - [cyan]help[/cyan]: Show this menu.\n"
+                    "[bold]Commands:[/bold]\n" \
+                    "  - [cyan]add[/cyan]: Add a new task.\n\n" \
+                    "  - [cyan]list[/cyan]: List all tasks.\n" \
+                    "  - [cyan]complete [ID][/cyan]: Mark a task as completed.\n" \
+                    "  - [cyan]delete [ID][/cyan]: Delete a task.\n" \
+                    "  - [cyan]help[/cyan]: Show this menu.\n" \
                     "  - [cyan]exit[/cyan]: Exit the application.",
                     title="[bold green]Menu[/bold green]",
                     border_style="green"
@@ -76,7 +84,7 @@ def start():
                     console.print("[bold red]Error: Task title cannot be empty.[/bold red]")
                     continue
 
-                if not description and (args == "" or not args.startswith('"')): # Only prompt if no description was given in args AND args wasn't a quoted string
+                if not description and (args == "" or not args.startswith('"')):
                     description = console.input("  Enter task description (optional): ").strip()
                 
                 try:
@@ -121,7 +129,11 @@ def start():
 
                 try:
                     task_id = int(task_id_str)
-                    task = task_manager.find_task_by_id(task_id) # Need to find the task first
+                    temp_task = task_manager.find_task_by_id(task_id)
+                    if temp_task is None:
+                        console.print(f"[bold red]Error: Task {task_id} not found.[/bold red]")
+                        continue
+                    task = temp_task # Need to find the task first
                     if task:
                         if task.status == "Completed":
                             console.print(f"[bold yellow]Task {task_id} is already Completed.[/bold yellow]")

@@ -1,3 +1,12 @@
+Metadata-Version: 2.4
+Name: todo-hackathon
+Version: 0.1.0
+Summary: A strictly typed in-memory todo app
+Requires-Python: >=3.13
+Description-Content-Type: text/markdown
+Requires-Dist: typer
+Requires-Dist: rich
+
 # Todo App
 
 A simple, command-line-based Todo application built with Python, Typer, and Rich.

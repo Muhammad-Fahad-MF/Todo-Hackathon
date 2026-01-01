@@ -13,10 +13,17 @@ dependencies = [
 todo = "todo.main:app"
 
 # This tells uv to treat the src folder as the root for your code
-[tool.setuptools.packages.find]
-where = ["src"]
+
 
 # --- ADD THESE SECTIONS BELOW ---
+
+
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["todo*"]
+exclude = ["specs*", "history*"]
+
 
 [tool.uv]
 package = true

@@ -73,8 +73,8 @@ Success Condition: The file contains the `Task` type with `id`, `title`, `descri
 
 **Purpose**: Add final touches and ensure all requirements are met.
 
-- [ ] T020 Add comprehensive docstrings and type hints to all functions and classes in `src/todo/` and `main.py`. Success Condition: Code is fully documented and passes static type checking.
-- [ ] T021 Create/update the `README.md` file with clear instructions on how to set up, run, and use the application. Success Condition: The `README.md` is complete and accurate.
+- [x] T020 Add comprehensive docstrings and type hints to all functions and classes in `src/todo/` and `main.py`. Success Condition: Code is fully documented and passes static type checking.
+- [x] T021 Create/update the `README.md` file with clear instructions on how to set up, run, and use the application. Success Condition: The `README.md` is complete and accurate.
 
 ---
 ## Dependencies & Execution Order
