@@ -61,10 +61,10 @@ Success Condition: The file contains the `Task` type with `id`, `title`, `descri
 
 **Purpose**: Enhance the CLI output using the `rich` library for a better user experience.
 
-- [ ] T016 [US5] Create and display a welcome banner using `rich.panel.Panel` when the application starts in `src/todo/main.py`. Success Condition: A panel is shown on startup.
-- [ ] T017 [US2] Use `rich.table.Table` to display the output of the "list" command in `src/todo/main.py`, with color-coding for status. Success Condition: The "list" command shows a formatted table.
-- [ ] T018 [US1] [US3] [US4] Use `rich.print` with color (e.g., `"[red]Error..."`) for all error messages in `src/todo/main.py`. Success Condition: Invalid ID errors are shown in red.
-- [ ] T019 Use `rich.panel.Panel` or `rich.table.Table` to display the main menu of available commands within the REPL in `src/todo/main.py`. Success Condition: A formatted menu is shown in the main loop.
+- [x] T016 [US5] Create and display a welcome banner using `rich.panel.Panel` when the application starts in `src/todo/main.py`. Success Condition: A panel is shown on startup.
+- [x] T017 [US2] Use `rich.table.Table` to display the output of the "list" command in `src/todo/main.py`, with color-coding for status. Success Condition: The "list" command shows a formatted table.
+- [x] T018 [US1] [US3] [US4] Use `rich.print` with color (e.g., `"[red]Error..."`) for all error messages in `src/todo/main.py`. Success Condition: Invalid ID errors are shown in red.
+- [x] T019 Use `rich.panel.Panel` or `rich.table.Table` to display the main menu of available commands within the REPL in `src/todo/main.py`. Success Condition: A formatted menu is shown in the main loop.
 
 **Checkpoint**: Human Review. The UI is now polished and uses `rich` components as specified.
 

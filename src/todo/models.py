@@ -1,33 +1,23 @@
 from dataclasses import dataclass, field
-from typing import Literal
+from typing import Literal, Optional, get_args
+from datetime import datetime, timezone
 
 @dataclass
 class Task:
-    id: int = field(init=False)  # Auto-incrementing, unique ID
     title: str
-    description: str = ""
+    description: Optional[str] = None
     status: Literal["Pending", "Completed"] = "Pending"
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    completed_at: Optional[datetime] = None
+    id: int = field(init=False)
 
-    # Internal counter for auto-incrementing IDs
-    _next_id: int = field(init=False, default=1, repr=False)
+    _id_counter: int = field(default=0, init=False, repr=False)
 
     def __post_init__(self):
-        # Assign ID and increment the counter
-        if not hasattr(Task, '_next_id_counter'):
-            Task._next_id_counter = 1
-        self.id = Task._next_id_counter
-        Task._next_id_counter += 1
+        type(self)._id_counter += 1
+        self.id = type(self)._id_counter
 
     def __setattr__(self, name, value):
-        if name == 'status':
-            if value not in ["Pending", "Completed"]:
-                raise ValueError("Status must be 'Pending' or 'Completed'")
+        if name == 'status' and value not in get_args(self.__class__.__annotations__['status']):
+            raise ValueError(f"Status must be one of {get_args(self.__class__.__annotations__['status'])}")
         super().__setattr__(name, value)
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "title": self.title,
-            "description": self.description,
-            "status": self.status
-        }

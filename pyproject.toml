@@ -1,7 +1,7 @@
 [project]
 name = "todo-hackathon"
 version = "0.1.0"
-description = "Add your description here"
+description = "A strictly typed in-memory todo app"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
@@ -10,8 +10,17 @@ dependencies = [
 ]
 
 [project.scripts]
-start = "todo.main:app"
+todo = "todo.main:app"
 
+# This tells uv to treat the src folder as the root for your code
 [tool.setuptools.packages.find]
 where = ["src"]
 
+# --- ADD THESE SECTIONS BELOW ---
+
+[tool.uv]
+package = true
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

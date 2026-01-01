@@ -1,5 +1,7 @@
 import typer
 from rich.console import Console
+from rich.table import Table
+from rich.panel import Panel
 from todo.manager import TaskManager # Import TaskManager
 
 console = Console()
@@ -9,7 +11,14 @@ task_manager = TaskManager() # Instantiate TaskManager
 @app.command()
 def start():
     """Starts the Todo application REPL."""
-    console.print("[bold blue]Welcome to the Todo App![/bold blue]")
+    welcome_panel = Panel(
+        "[bold blue]Welcome to the Todo App![/bold blue]\n\n"
+        "Type 'help' to see available commands.",
+        title="[bold green]Todo CLI[/bold green]",
+        border_style="green"
+    )
+    console.print(welcome_panel)
+
     while True:
         try:
             command_line = console.input("[bold green]TodoApp> [/bold green]").strip()
@@ -20,7 +29,21 @@ def start():
             command = command_parts[0].lower()
             args = command_parts[1] if len(command_parts) > 1 else ""
 
-            if command == "exit":
+            if command == "help":
+                menu_panel = Panel(
+                    "[bold]Commands:[/bold]\n"
+                    "  - [cyan]add[/cyan]: Add a new task.\n"
+
+                    "  - [cyan]list[/cyan]: List all tasks.\n"
+                    "  - [cyan]complete [ID][/cyan]: Mark a task as completed.\n"
+                    "  - [cyan]delete [ID][/cyan]: Delete a task.\n"
+                    "  - [cyan]help[/cyan]: Show this menu.\n"
+                    "  - [cyan]exit[/cyan]: Exit the application.",
+                    title="[bold green]Menu[/bold green]",
+                    border_style="green"
+                )
+                console.print(menu_panel)
+            elif command == "exit":
                 console.print("[bold blue]Exiting Todo App. Goodbye![/bold blue]")
                 break
             elif command == "add":
@@ -67,10 +90,29 @@ def start():
                 if not tasks:
                     console.print("[bold yellow]No tasks found.[/bold yellow]")
                 else:
-                    console.print("[bold blue]Your Tasks:[/bold blue]")
+                    table = Table(title="[bold blue]Your Tasks[/bold blue]", show_header=True, header_style="bold magenta")
+                    table.add_column("ID", style="dim", width=6)
+                    table.add_column("Title", min_width=20, overflow="fold")
+                    table.add_column("Description", max_width=50, overflow="fold")
+                    table.add_column("Status", justify="center")
+                    table.add_column("Created At", justify="right")
+                    table.add_column("Completed At", justify="right")
+
                     for task in tasks:
                         status_color = "green" if task.status == "Completed" else "yellow"
-                        console.print(f"  ID: {task.id}, Title: {task.title}, Status: [{status_color}]{task.status}[/{status_color}], Description: {task.description}")
+                        status_text = f"[{status_color}]{task.status}[/{status_color}]"
+                        
+                        completed_at_str = task.completed_at.strftime("%Y-%m-%d %H:%M") if task.completed_at else "N/A"
+
+                        table.add_row(
+                            str(task.id),
+                            task.title,
+                            task.description or "N/A",
+                            status_text,
+                            task.created_at.strftime("%Y-%m-%d %H:%M"),
+                            completed_at_str
+                        )
+                    console.print(table)
             elif command == "complete":
                 if not args:
                     task_id_str = console.input("  Enter task ID to complete: ").strip()

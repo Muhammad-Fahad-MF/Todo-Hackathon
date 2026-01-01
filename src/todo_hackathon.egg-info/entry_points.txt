@@ -1,2 +1,2 @@
 [console_scripts]
-start = todo.main:app
+todo = todo.main:app
