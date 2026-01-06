@@ -1,56 +1,59 @@
-# Phase 1 In-Memory Todo Console Application (Python) Constitution
-
 <!--
-Sync Impact Report:
-- Version change: 0.0.0 → 1.0.0
-- List of modified principles:
-  - [PRINCIPLE_1_NAME] → Simplicity
-  - [PRINCIPLE_2_NAME] → Type Safety
-  - [PRINCIPLE_3_NAME] → User Experience
-  - [PRINCIPLE_4_NAME] → Modularity
-- Added sections: Key Standards, Constraints, Success Criteria
-- Removed sections: Principles 5 and 6
-- Templates requiring updates:
-  - ✅ .specify/templates/plan-template.md
-  - ✅ .specify/templates/spec-template.md
-  - ✅ .specify/templates/tasks-template.md
-- Follow-up TODOs: None
+---
+Sync Impact Report
+---
+Version Change: 0.0.0 -> 1.0.0
+Modified Principles:
+- PRINCIPLE_1_NAME -> Spec-Driven & Contract-First Protocol
+- PRINCIPLE_2_NAME -> Strict Environment & Config Management
+- PRINCIPLE_3_NAME -> Backend Architecture (FastAPI + SQLModel)
+- PRINCIPLE_4_NAME -> Frontend Architecture (Next.js 16+)
+- PRINCIPLE_5_NAME -> Security & Multi-Tenancy (The 'Iron' Rule)
+- PRINCIPLE_6_NAME -> Operational Excellence
+Added Sections: None
+Removed Sections:
+- [SECTION_2_NAME]
+- [SECTION_3_NAME]
+Templates Requiring Updates:
+- ✅ .specify/templates/plan-template.md
+- ✅ .specify/templates/spec-template.md
+- ✅ .specify/templates/tasks-template.md
+Follow-up TODOs: None
 -->
+# Todo Full-Stack Web Application Constitution
 
 ## Core Principles
 
-### I. Simplicity
-Code should be strictly minimal and functional (YAGNI - You Aren't Gonna Need It).
+### 1. Spec-Driven & Contract-First Protocol
+Contract-First: Before implementing code, ensure the API contract (endpoints, request/response models) is finalized in @spec-kit/specs/api.md.
+Atomic Implementation: Do not implement multiple features in one pass. Every implementation must be a single, verifiable task from the task list.
+Zero-Manual-Code: No code exists outside the specifications. If the code deviates from the spec, the spec is the master; update the spec first.
 
-### II. Type Safety
-Rigorous use of Python 3.13+ type hinting for all functions and classes.
+### 2. Strict Environment & Config Management
+Zero Hardcoding: No URLs, secrets, or ports in the codebase.
+Validation: Use pydantic-settings in the Backend and a validation script in the Frontend to ensure the app crashes on startup with a clear error if any required .env variable is missing.
+Local vs. Production: Support .env.example files in both /backend and /frontend. Use DATABASE_URL, BETTER_AUTH_SECRET, and API_BASE_URL as mandatory keys.
 
-### III. User Experience
-The CLI should use the 'rich' library for visual hierarchy (tables, colors) rather than plain print statements.
+### 3. Backend Architecture (FastAPI + SQLModel)
+Async by Default: All database operations and route handlers must use async/await.
+Dependency Injection: Use FastAPI’s Depends for database sessions and authentication guards to ensure testability.
+Structured Logging: Use the logging module to output JSON-formatted logs. Avoid print() statements.
+Pydantic V2: Strictly use Pydantic V2 for all schemas, utilizing field_validator for data integrity.
 
-### IV. Modularity
-Separation of concerns between the data model (logic) and the user interface (view).
+### 4. Frontend Architecture (Next.js 16+)
+Type Safety: strict: true in tsconfig.json. No any types allowed. Use Zod for client-side form validation.
+Server Components: Default to React Server Components (RSC) for data fetching to minimize client-side JavaScript.
+Auth Integration: Implement Better Auth using the middleware pattern to protect routes at the edge.
 
-## Key Standards
-- **Language Version**: Python 3.13+
-- **Code Style**: PEP 8 compliance; use snake_case for functions/variables, PascalCase for classes.
-- **Documentation**: Google-style docstrings required for all modules, classes, and functions.
-- **Error Handling**: No raw crashes. Use try/except blocks to catch user input errors (e.g., non-integer IDs) and display friendly error messages.
-- **Data Structure**: Use a global List of Dictionaries or a Task Class for in-memory storage.
+### 5. Security & Multi-Tenancy (The 'Iron' Rule)
+User Isolation: Every database query must include a .where(Task.user_id == authenticated_user_id) clause. There must be no global 'get_all_tasks' endpoint that lacks a user filter.
+JWT Integrity: The backend must verify the JWT signature using the BETTER_AUTH_SECRET before processing any request. Return 401 Unauthorized for invalid tokens.
 
-## Constraints
-- **Storage**: STRICTLY In-Memory only. Do not use SQLite, JSON files, or any external database persistence for this phase.
-- **Directory Structure**: All source code must reside in a `src/` folder.
-- **Dependencies**: Use 'uv' for dependency management (rich, typer/click).
-- **Testing**: Code must be testable (logic separated from input/output).
-
-## Success Criteria
-- Application starts and stops without errors.
-- Code passes static type checking.
-- The 5 core features (Add, Delete, Update, List, Complete) share a consistent UI style.
-- Repository structure includes src/, specs/, README.md, and GEMINI.md.
+### 6. Operational Excellence
+Health Checks: Provide a /health endpoint in the backend to monitor database connectivity.
+Error Handling: Implement a global exception handler in FastAPI to return consistent JSON error responses (e.g., { "error": "Message", "code": 404 })
 
 ## Governance
-This Constitution supersedes all other practices. Amendments require documentation, approval, and a migration plan. All pull requests and reviews must verify compliance with this constitution. Complexity must be justified. Use `GEMINI.md` for runtime development guidance.
+All pull requests and code reviews must verify compliance with this constitution. Any deviation from these principles must be justified, documented, and approved.
 
-**Version**: 1.0.0 | **Ratified**: 2026-01-01 | **Last Amended**: 2026-01-01
+**Version**: 1.0.0 | **Ratified**: 2026-01-06 | **Last Amended**: 2026-01-06
