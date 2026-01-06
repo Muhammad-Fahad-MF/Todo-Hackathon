@@ -45,11 +45,15 @@ As an authenticated user, I want to create, view, update, and delete my tasks so
 - **FR-005**: The system MUST store tasks with a title, a description, a completion status, and creation/update timestamps.
 - **FR-006**: The user interface MUST be clean, responsive, and work across modern web browsers.
 - **FR-007**: User input for forms (signup, login, new task) MUST be validated before submission.
-- **FR-008**: All communication between the client and server MUST be secured with an authentication token.
-- **FR-009**: The system MUST provide clear error responses for common issues like unauthorized access, invalid input, or resources not being found.
+- **FR-008**: All communication between the client and server MUST be secured with a JWT. A FastAPI dependency will validate the token and provide a `CurrentUser` model (`user_id`, `email`) to protected endpoints.
+- **FR-009**: The system MUST provide clear, standardized JSON error responses for all failures: `{"detail": {"code": "ERROR_CODE", "message": "..."}}`. A global exception handler will enforce this, including for Pydantic validation errors (HTTP 422).
+- **FR-010**: The backend MUST use Neon's connection pooler for all database connections, configured via an environment variable (port 6543).
+- **FR-011**: An idempotent seed script (`seed.py`) MUST be provided to populate the database with consistent data for development and testing.
+- **FR-012**: A shell script (`scripts/sync-types.sh`) MUST be provided to automate the generation of TypeScript types from backend Pydantic models.
+- **FR-013**: The FastAPI backend MUST use `CORSMiddleware`, configured via environment variables, to handle cross-origin requests from the frontend development server.
 
 ### Key Entities
-- **User**: Represents a registered person in the system. Key attributes include a unique identifier and authentication credentials.
+- **User**: Represents a registered person in the system. Key attributes include a unique identifier and authentication credentials. A `CurrentUser` Pydantic model, containing `user_id` and `email`, will be derived from the JWT for use in protected API endpoints.
 - **Task**: Represents a single to-do item. Key attributes include a title, description, completion status, and timestamps. A task must be associated with one and only one User.
 
 ### Out of Scope
@@ -65,6 +69,14 @@ As an authenticated user, I want to create, view, update, and delete my tasks so
 - **SC-002**: An authenticated user can create a new task and see it on their dashboard in under 3 seconds.
 - **SC-003**: 99% of user actions on a task (update, delete) are reflected in the UI in under 2 seconds.
 - **SC-004**: The system must enforce user data isolation in 100% of API requests for tasks.
+
+## Clarifications
+
+### Session 2026-01-06
+- **Q: How should the backend handle authentication?** → **A:** Implement a reusable FastAPI dependency that validates the JWT and returns a `CurrentUser` Pydantic model containing `user_id` and `email`.
+- **Q: What is the database connection and seeding strategy?** → **A:** Use Neon's PostgreSQL connection pooler via its pooling connection string (port 6543), configured by an environment variable. An idempotent `seed.py` script will manage initial data.
+- **Q: How will frontend/backend types be synced and CORS handled?** → **A:** Type generation will be automated via a `scripts/sync-types.sh` script that runs `pydantic-to-typescript`. CORS will be handled by FastAPI's `CORSMiddleware`, configured via environment variables.
+- **Q: What is the standardized API error structure?** → **A:** A global exception handler will be implemented in FastAPI to catch all errors (including Pydantic `ValidationError`) and format them into a standard `{"detail": {"code": "ERROR_CODE", "message": "..."}}` structure.
 
 ## Assumptions
 - Users will have a modern web browser with JavaScript enabled.
