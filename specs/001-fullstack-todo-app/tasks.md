@@ -53,13 +53,13 @@ This document provides a final, consolidated, and actionable checklist for imple
 
 **Definition of Done**: The frontend provides a complete UI for authentication and task management, with persistent state and good UX patterns (loading/error states).
 
-- [ ] T017 [P] Install frontend dependencies: Better Auth client, `zustand` (for state), `immer` (for zustand), `lucide-react`, `clsx`, `tailwind-merge`, `sonner` (for toasts), and `zod` (for validation).
-- [ ] T018 [US1] Implement Zustand store in `frontend/src/lib/store.ts` for managing and persisting the user session state.
-- [ ] T019 [US1] Create Login/Signup pages in `frontend/src/app/(auth)/` that integrate with the Better Auth library for authentication.
-- [ ] T020 [US1] Implement client-side form validation on the Login and Signup forms using Zod, providing clear error messages for invalid input.
-- [ ] T021 [US1, US2] Create Edge Middleware in `frontend/src/middleware.ts` to protect all non-auth routes from unauthenticated access.
-- [ ] T022 [US2] Design and build loading skeleton components for the task list in `frontend/src/components/ui/skeletons.tsx`.
-- [ ] T023 [US2] Implement Sonner for toast notifications in `frontend/src/components/ui/Toaster.tsx` to provide feedback on API actions.
+- [x] T017 [P] Install frontend dependencies: Better Auth client, `zustand` (for state), `immer` (for zustand), `lucide-react`, `clsx`, `tailwind-merge`, `sonner` (for toasts), and `zod` (for validation).
+- [x] T018 [US1] Implement Zustand store in `frontend/src/lib/store.ts` for managing and persisting the user session state.
+- [x] T019 [US1] Create Login/Signup pages in `frontend/src/app/(auth)/` that integrate with the Better Auth library for authentication.
+- [x] T020 [US1] Implement client-side form validation on the Login and Signup forms using Zod, providing clear error messages for invalid input.
+- [x] T021 [US1, US2] Create Edge Middleware in `frontend/src/middleware.ts` to protect all non-auth routes from unauthenticated access.
+- [x] T022 [US2] Design and build loading skeleton components for the task list in `frontend/src/components/ui/skeletons.tsx`.
+- [x] T023 [US2] Implement Sonner for toast notifications in `frontend/src/components/ui/Toaster.tsx` to provide feedback on API actions.
 
 ---
 
