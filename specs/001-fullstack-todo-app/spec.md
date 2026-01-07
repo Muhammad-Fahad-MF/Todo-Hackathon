@@ -29,11 +29,11 @@ As an authenticated user, I want to create, view, update, and delete my tasks so
 4. **Given** a user has a task, **When** they activate the 'Delete' control for that task, **Then** they are asked to confirm, and upon confirmation, the task is permanently removed from their list.
 
 ---
-### Edge Cases
-- **Authentication**: How does the system handle repeated failed login attempts from the same IP address? (e.g., rate limiting).
-- **Task Input**: What happens if a user tries to create a task with an empty title or a title exceeding a reasonable character limit (e.g., 255 characters)?
-- **Data Integrity**: What happens if a user tries to access a task that does not belong to them via a direct URL? (Access should be denied).
-- **Network**: How does the UI behave if the connection to the server is lost while a user is trying to add or modify a task? A friendly error message should be shown.
+### Edge Cases and Specific Behaviors
+- **EC-001 (Authentication)**: After 5 consecutive failed login attempts from a single IP address within a 1-minute window, the system MUST block further login attempts from that IP for 5 minutes. A 429 Too Many Requests error will be returned.
+- **EC-002 (Task Input)**: The API MUST reject requests to create or update a task if the title is empty or null, returning a 422 Unprocessable Entity error. The title length is limited to 255 characters.
+- **EC-003 (Data Integrity)**: If a user attempts to access a task URL (e.g., `/api/tasks/{task_id}`) for a task that does not belong to them, the API MUST return a 404 Not Found error, revealing no information about the task's existence.
+- **EC-004 (Network)**: If the client loses server connectivity during an action (e.g., creating a task), the UI MUST display a non-blocking toast notification (e.g., "Connection error. Please try again.") and SHOULD optimistically revert the UI change if possible.
 
 ## Requirements *(mandatory)*
 
@@ -67,7 +67,7 @@ As an authenticated user, I want to create, view, update, and delete my tasks so
 ## Success Criteria *(mandatory)*
 
 ### Measurable Outcomes
-- **SC-001**: A new user can successfully create an account and log in within 60 seconds.
+- **SC-001**: A new user can successfully create an account and log in within 5 seconds (p95).
 - **SC-002**: An authenticated user can create a new task and see it on their dashboard in under 3 seconds.
 - **SC-003**: 99% of user actions on a task (update, delete) are reflected in the UI in under 2 seconds.
 - **SC-004**: The system must enforce user data isolation in 100% of API requests for tasks.
