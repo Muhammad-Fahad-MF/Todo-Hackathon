@@ -25,11 +25,11 @@ This document provides a final, consolidated, and actionable checklist for imple
 
 **Definition of Done**: The database schema is defined and managed via code, and the application can interact with the database asynchronously.
 
-- [ ] T007 [US1, US2] Define `User` and `Task` schemas in `backend/app/models/` using SQLModel, ensuring `Task.user_id` has a foreign key to `User`.
-- [ ] T008 Initialize Alembic in the `backend/` directory and configure `backend/alembic/env.py` to enable automatic column type change detection (`compare_type=True`).
-- [ ] T009 Create the initial Alembic migration in `backend/alembic/versions/` to generate the `User` and `Task` tables.
-- [ ] T010 Implement the database engine and session logic in `backend/app/db/session.py`, ensuring it uses an `AsyncSession` with the `+asyncpg` dialect.
-- [ ] T011 [P] Create an idempotent seeding script in `backend/scripts/seed.py` to populate the database with test data.
+- [x] T007 [US1, US2] Define `User` and `Task` schemas in `backend/app/models/` using SQLModel, ensuring `Task.user_id` has a foreign key to `User`.
+- [x] T008 Initialize Alembic in the `backend/` directory and configure `backend/alembic/env.py` to enable automatic column type change detection (`compare_type=True`).
+- [x] T009 Create the initial Alembic migration in `backend/alembic/versions/` to generate the `User` and `Task` tables.
+- [x] T010 Implement the database engine and session logic in `backend/app/db/session.py`, ensuring it uses an `AsyncSession` with the `+asyncpg` dialect.
+- [x] T011 [P] Create an idempotent seeding script in `backend/scripts/seed.py` to populate the database with test data.
 
 ---
 
@@ -39,9 +39,9 @@ This document provides a final, consolidated, and actionable checklist for imple
 
 **Definition of Done**: API endpoints are protected, correctly handle business logic, and conform to the project's error and CORS contracts.
 
-- [ ] T012 [US1, US2] Implement a reusable FastAPI dependency in `backend/app/core/auth.py` that verifies the Better Auth session JWT and returns a `CurrentUser` model.
-- [ ] T013 [US2] Implement `POST`, `GET`, `PUT`, `DELETE` endpoints for tasks in `backend/app/api/v1/endpoints/tasks.py`, ensuring all queries are filtered by `user_id`.
-- [ ] T014 Configure `CORSMiddleware` in `backend/app/main.py` to use a `CORS_ORIGINS` environment variable.
+- [x] T012 [US1, US2] Implement a reusable FastAPI dependency in `backend/app/core/auth.py` that verifies the Better Auth session JWT and returns a `CurrentUser` model.
+- [x] T013 [US2] Implement `POST`, `GET`, `PUT`, `DELETE` endpoints for tasks in `backend/app/api/v1/endpoints/tasks.py`, ensuring all queries are filtered by `user_id`.
+- [x] T014 Configure `CORSMiddleware` in `backend/app/main.py` to use a `CORS_ORIGINS` environment variable.
 - [ ] T015 Implement a global exception handler in `backend/app/main.py` to enforce the standardized JSON error structure.
 - [ ] T016 [P] Create a `/health` check endpoint in `backend/app/main.py` that verifies database connectivity.
 
