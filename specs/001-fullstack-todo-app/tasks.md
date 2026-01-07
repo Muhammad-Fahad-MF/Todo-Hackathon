@@ -42,8 +42,8 @@ This document provides a final, consolidated, and actionable checklist for imple
 - [x] T012 [US1, US2] Implement a reusable FastAPI dependency in `backend/app/core/auth.py` that verifies the Better Auth session JWT and returns a `CurrentUser` model.
 - [x] T013 [US2] Implement `POST`, `GET`, `PUT`, `DELETE` endpoints for tasks in `backend/app/api/v1/endpoints/tasks.py`, ensuring all queries are filtered by `user_id`.
 - [x] T014 Configure `CORSMiddleware` in `backend/app/main.py` to use a `CORS_ORIGINS` environment variable.
-- [ ] T015 Implement a global exception handler in `backend/app/main.py` to enforce the standardized JSON error structure.
-- [ ] T016 [P] Create a `/health` check endpoint in `backend/app/main.py` that verifies database connectivity.
+- [x] T015 Implement a global exception handler in `backend/app/main.py` to enforce the standardized JSON error structure.
+- [x] T016 [P] Create a `/health` check endpoint in `backend/app/main.py` that verifies database connectivity.
 
 ---
 
