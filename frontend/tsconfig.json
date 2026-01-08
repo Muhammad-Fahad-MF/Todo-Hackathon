@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "better-auth/*": ["./src/better-auth/*"]
     }
   },
   "include": [

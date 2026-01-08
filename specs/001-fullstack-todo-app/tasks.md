@@ -69,8 +69,8 @@ This document provides a final, consolidated, and actionable checklist for imple
 
 **Definition of Done**: The application is fully functional end-to-end, and the core security principle of data isolation is formally verified.
 
-- [ ] T024 [US2] Implement a typed API client module in `frontend/src/lib/api.ts` using the generated types from `sync-types.sh`.
-- [ ] T025 [US2] Build the main dashboard UI in `frontend/src/app/dashboard/page.tsx`, fetching and displaying user-specific tasks.
-- [ ] T026 [US2] Implement the full UI lifecycle for tasks (add, list, toggle, delete), using loading skeletons and toasts for feedback.
-- [ ] T027 **Security**: Create the 'Iron Rule' security audit procedure as a markdown document in `docs/security/iron-rule-test.md`.
-- [ ] T028 **Security**: Execute the 'Iron Rule' test procedure against the live API and document the pass/fail outcome in the audit document.
+- [x] T024 [US2] Implement a typed API client module in `frontend/src/lib/api.ts` using the generated types from `sync-types.sh`.
+- [x] T025 [US2] Build the main dashboard UI in `frontend/src/app/dashboard/page.tsx`, fetching and displaying user-specific tasks.
+- [x] T026 [US2] Implement the full UI lifecycle for tasks (add, list, toggle, delete), using loading skeletons and toasts for feedback.
+- [x] T027 **Security**: Create the 'Iron Rule' security audit procedure as a markdown document in `docs/security/iron-rule-test.md`.
+- [x] T028 **Security**: Execute the 'Iron Rule' test procedure against the live API and document the pass/fail outcome in the audit document.
