@@ -1,26 +1,26 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { Task } from '@/types/schemas';
 
-interface UserSession {
-  userId: string;
-  email: string;
-  // Add any other user properties you need
+interface TaskState {
+  tasks: Task[];
+  setTasks: (tasks: Task[]) => void;
+  addTask: (task: Task) => void;
+  updateTask: (id: number, updates: Partial<Task>) => void;
+  deleteTask: (id: number) => void;
 }
 
-interface SessionState {
-  session: UserSession | null;
-  setSession: (session: UserSession | null) => void;
-}
-
-export const useSessionStore = create<SessionState>()(
-  persist(
-    (set) => ({
-      session: null,
-      setSession: (session) => set({ session }),
-    }),
-    {
-      name: 'user-session-storage', // name of the item in the storage (must be unique)
-      storage: createJSONStorage(() => localStorage), // (optional) by default, 'localStorage' is used
-    }
-  )
-);
+export const useTaskStore = create<TaskState>((set) => ({
+  tasks: [],
+  setTasks: (tasks) => set({ tasks }),
+  addTask: (task) => set((state) => ({ tasks: [...state.tasks, task] })),
+  updateTask: (id, updates) =>
+    set((state) => ({
+      tasks: state.tasks.map((task) =>
+        task.id === id ? { ...task, ...updates } : task
+      ),
+    })),
+  deleteTask: (id) =>
+    set((state) => ({
+      tasks: state.tasks.filter((task) => task.id !== id),
+    })),
+}));

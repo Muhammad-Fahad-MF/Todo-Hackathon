@@ -2,40 +2,54 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 import jwt
-
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
 from app.models.models import User
+from app.db.session import get_session
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 class CurrentUser(BaseModel):
-    id: int
+    id: str
     email: str
 
-def get_current_user(token: str = Depends(oauth2_scheme)) -> CurrentUser:
+async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_session)) -> CurrentUser:
     """
-    A placeholder dependency to simulate JWT verification and return a CurrentUser.
-    In a real application, this would decode the JWT, query the database for the user,
-    and handle exceptions for invalid tokens.
+    Decodes the JWT, queries the database for the user,
+    and handles exceptions for invalid tokens.
     """
     try:
-        # This is a placeholder. In a real app, you would use a secret key
-        # and verify the token's signature and claims.
+        # better-auth jwt plugin uses the secret to sign. Default alg is HS256.
         payload = jwt.decode(token, settings.BETTER_AUTH_SECRET, algorithms=["HS256"])
-        user_id: int = payload.get("sub")
+        
+        # specific to better-auth: user_id might be in 'sub' or 'id'
+        user_id: str = payload.get("sub") or payload.get("id")
+        
         if user_id is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid authentication credentials",
+                detail="Invalid authentication credentials: No user ID found in token",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        # In a real app, you'd fetch the user from the database here.
-        # For this example, we'll return a dummy user based on the token.
-        # This assumes the user exists.
-        return CurrentUser(id=user_id, email=f"user_{user_id}@example.com")
-    except jwt.PyJWTError:
+            
+        user = await db.get(User, user_id)
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User not found",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+            
+        return CurrentUser(id=user.id, email=user.email)
+    except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
+            detail="Token has expired",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except jwt.PyJWTError as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Invalid authentication credentials: {str(e)}",
             headers={"WWW-Authenticate": "Bearer"},
         )

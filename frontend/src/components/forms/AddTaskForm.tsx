@@ -2,17 +2,17 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { createTask } from "@/lib/api";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TaskCreate } from "@/types/schemas";
+import { useTaskStore } from "@/lib/store";
 
 export function AddTaskForm() {
   const [title, setTitle] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter();
+  const addTask = useTaskStore((state) => state.addTask);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -23,13 +23,11 @@ export function AddTaskForm() {
 
     setIsSubmitting(true);
     try {
-      const newTask: TaskCreate = { title, description: "" }; // Assuming description is optional
-      await createTask(newTask);
+      const newTaskData: TaskCreate = { title, description: "" }; // Assuming description is optional
+      const newTask = await createTask(newTaskData);
+      addTask(newTask);
       toast.success("Task added successfully!");
       setTitle("");
-      // Refresh the page to show the new task.
-      // A more advanced implementation might use client-side state management.
-      router.refresh();
     } catch (error) {
       if (error instanceof Error) {
         toast.error(`Failed to add task: ${error.message}`);

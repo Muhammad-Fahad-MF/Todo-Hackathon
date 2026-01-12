@@ -24,6 +24,12 @@ logger.addHandler(logHandler)
 
 app = FastAPI()
 
+# --- AUTHENTICATION ARCHITECTURE NOTE ---
+# Authentication is handled by the Next.js Frontend using Better-Auth (port 3000).
+# This Backend (port 8000) DOES NOT handle login/signup.
+# It only validates the JWT tokens passed in the 'Authorization' header.
+# ----------------------------------------
+
 # Set all CORS enabled origins
 if settings.CORS_ORIGINS:
     app.add_middleware(
@@ -33,6 +39,16 @@ if settings.CORS_ORIGINS:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+@app.get("/api/auth/info")
+def auth_info():
+    """
+    Informational endpoint to clarify Auth architecture.
+    """
+    return {
+        "message": "Authentication is handled by the Next.js Frontend (Better-Auth).",
+        "instructions": "Please use the Frontend URL (e.g., http://localhost:3000) for login and signup."
+    }
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):

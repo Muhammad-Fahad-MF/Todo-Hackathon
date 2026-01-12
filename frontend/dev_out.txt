@@ -1,0 +1,28 @@
+
+> frontend@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.21.192.1:3000
+- Environments: .env.local
+
+✓ Starting...
+✓ Ready in 17.6s
+○ Compiling / ...
+ GET / 200 in 12.3s (compile: 9.6s, proxy.ts: 456ms, render: 2.2s)
+ GET /auth/login 404 in 1018ms (compile: 427ms, proxy.ts: 107ms, render: 483ms)
+ GET /auth/login 404 in 814ms (compile: 57ms, proxy.ts: 25ms, render: 731ms)
+ GET /auth 404 in 416ms (compile: 53ms, proxy.ts: 38ms, render: 325ms)
+ GET /auth/login 404 in 215ms (compile: 31ms, proxy.ts: 17ms, render: 167ms)
+○ Compiling /login ...
+ GET /login 200 in 6.3s (compile: 5.2s, proxy.ts: 18ms, render: 1054ms)
+ GET /signup 200 in 5.5s (compile: 3.1s, proxy.ts: 17ms, render: 2.4s)
+ GET /login?redirect=%2Fdashboard 200 in 235ms (compile: 16ms, proxy.ts: 20ms, render: 199ms)
+ GET / 200 in 195ms (compile: 16ms, proxy.ts: 14ms, render: 165ms)
+✓ Compiled in 363ms
+✓ Compiled in 2.4s
+ GET / 500 in 4.3s (compile: 2.7s, proxy.ts: 395ms, render: 1237ms)
+ GET / 500 in 122ms (compile: 50ms, proxy.ts: 23ms, render: 50ms)
+ GET / 500 in 85ms (compile: 30ms, proxy.ts: 14ms, render: 41ms)
+ GET / 500 in 156ms (compile: 57ms, proxy.ts: 18ms, render: 81ms)

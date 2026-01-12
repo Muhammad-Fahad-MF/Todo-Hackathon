@@ -1,13 +1,13 @@
 // @/components/tasks/TaskList.tsx
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useTaskStore } from "@/lib/store";
 import { Task } from "@/types/schemas";
-import { updateTask, deleteTask } from "@/lib/api";
+import { updateTask as apiUpdateTask, deleteTask as apiDeleteTask } from "@/lib/api";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox"; // Assuming you have a Checkbox component
+import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2 } from "lucide-react";
 
 interface TaskListProps {
@@ -15,24 +15,20 @@ interface TaskListProps {
 }
 
 export function TaskList({ initialTasks }: TaskListProps) {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
-  const router = useRouter();
+  const { tasks, setTasks, updateTask, deleteTask } = useTaskStore();
+
+  useEffect(() => {
+    setTasks(initialTasks);
+  }, [initialTasks, setTasks]);
 
   const handleToggle = async (id: number, is_completed: boolean) => {
     const originalTasks = tasks;
-    // Optimistically update UI
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, is_completed: !is_completed } : task
-      )
-    );
+    updateTask(id, { is_completed: !is_completed });
 
     try {
-      await updateTask(id, { is_completed: !is_completed });
+      await apiUpdateTask(id, { is_completed: !is_completed });
       toast.success(`Task ${!is_completed ? "completed" : "marked as pending"}.`);
-       router.refresh(); // Re-sync with server state
     } catch (error) {
-      // Revert UI on failure
       setTasks(originalTasks);
       toast.error("Failed to update task.");
     }
@@ -40,15 +36,12 @@ export function TaskList({ initialTasks }: TaskListProps) {
 
   const handleDelete = async (id: number) => {
     const originalTasks = tasks;
-    // Optimistically update UI
-    setTasks(tasks.filter((task) => task.id !== id));
+    deleteTask(id);
 
     try {
-      await deleteTask(id);
+      await apiDeleteTask(id);
       toast.success("Task deleted.");
-       router.refresh(); // Re-sync with server state
     } catch (error) {
-      // Revert UI on failure
       setTasks(originalTasks);
       toast.error("Failed to delete task.");
     }
