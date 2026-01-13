@@ -13,9 +13,6 @@ __pycache__/
 venv/
 *.egg-info/
 .mypy_cache/
-#temp:
-uv.lock
-pyproject.toml
 
 # Universal
 .DS_Store
