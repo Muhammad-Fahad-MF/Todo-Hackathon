@@ -12,6 +12,7 @@ __pycache__/
 .venv/
 venv/
 *.egg-info/
+.mypy_cache/
 
 # Universal
 .DS_Store
