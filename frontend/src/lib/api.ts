@@ -22,19 +22,16 @@ async function fetchApi(
   if (typeof window === "undefined") {
     // Server-side: Get token from headers/cookies
     const { headers } = await import("next/headers");
+    // Dynamic import to avoid bundling server-side dependencies (pg, fs) in client bundle
+    const { auth } = await import("@/lib/auth-server");
     const headerList = await headers();
-    const cookie = headerList.get("cookie");
     
-    // We can fetch the session from the internal auth API
-    const authUrl = `${APP_URL}/api/auth/get-session`;
     try {
-      const sessionRes = await fetch(authUrl, {
-        headers: { cookie: cookie || "" },
+      // Direct function call avoids network round-trip issues
+      const session = await auth.api.getSession({
+        headers: headerList,
       });
-      if (sessionRes.ok) {
-        const sessionData = await sessionRes.json();
-        token = sessionData?.session?.token;
-      }
+      token = session?.session?.token;
     } catch (e) {
       console.error("Error fetching session on server:", e);
     }

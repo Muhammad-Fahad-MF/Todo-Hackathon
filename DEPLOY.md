@@ -70,5 +70,37 @@ Since we have two sources of schema (better-auth and our own models):
 1.  Connect repo to Vercel.
 2.  Set Root Directory to `frontend`.
 3.  Vercel should auto-detect Next.js.
-4.  Add the Environment Variables.
 5.  Deploy.
+
+### Backend (Hugging Face Spaces)
+
+Hugging Face Spaces offers a simple way to host Dockerized applications.
+
+1.  **Create a New Space:**
+    - Go to [huggingface.co/spaces](https://huggingface.co/spaces).
+    - Create a new Space.
+    - Select **Docker** as the SDK.
+    - Choose **Blank** template.
+
+2.  **Configure Environment Variables:**
+    - Go to the **Settings** tab of your Space.
+    - Scroll to **Variables and secrets**.
+    - Add the following **Secrets** (for security) or **Variables**:
+        - `DATABASE_URL`: Your Async Postgres URL (`postgresql+asyncpg://...`)
+        - `BETTER_AUTH_SECRET`: Your shared auth secret.
+        - `CORS_ORIGINS`: JSON list of allowed origins (e.g., `["https://your-frontend-url.com"]`).
+
+3.  **Push Code:**
+    - Hugging Face Spaces are git repositories. You can push your `backend/` folder contents to the Space.
+    - **Method A (Git Push):**
+        - Clone your Space locally: `git clone https://huggingface.co/spaces/YOUR_USERNAME/YOUR_SPACE_NAME`
+        - Copy the contents of your `backend/` directory (including `Dockerfile` and `requirements.txt`) into the root of the cloned Space.
+        - `git add .`, `git commit -m "Deploy backend"`, `git push`.
+    - **Method B (Dockerfile Path):**
+        - If you sync your entire repo, you might need to configure the Space to look for the Dockerfile in `backend/`. However, HF Spaces usually expect the Dockerfile at the root.
+        - **Recommendation:** Use Method A or set up a GitHub Action to push the `backend/` folder to the HF Space remote.
+
+4.  **Verify:**
+    - The Space will build the Docker image.
+    - Once "Running", your API will be available at `https://huggingface.co/spaces/YOUR_USERNAME/YOUR_SPACE_NAME` (or the direct URL provided in the UI, usually `https://your-username-space-name.hf.space`).
+    - Use this URL as the `NEXT_PUBLIC_API_URL` in your Frontend.

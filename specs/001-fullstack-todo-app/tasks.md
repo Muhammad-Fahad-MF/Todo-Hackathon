@@ -119,3 +119,27 @@ This document provides a complete, corrected, dependency-aware, and actionable c
 - [x] T038 Ensure `backend/requirements.txt` is up-to-date and includes all production dependencies.
 - [x] T039 Update `DEPLOY.md` to include instructions for deploying the backend on Vercel.
 - [x] T040 [P] Verify backend environment variable parsing for Vercel (JSON strings for lists).
+
+---
+
+### Milestone 8: Hugging Face Deployment (Dockerization)
+
+**Goal**: Containerize the Python backend to enable deployment on Hugging Face Spaces (or any Docker-based platform).
+
+- [x] T041 **Dockerize Backend**:
+    - **Description**: Create a production-ready `backend/Dockerfile`.
+    - **Details**:
+        - Use a lightweight Python base image (e.g., `python:3.12-slim`).
+        - Set the working directory.
+        - Install dependencies (system level if needed, then python packages).
+        - Copy source code.
+        - Expose port 7860 (Standard for Hugging Face Spaces).
+        - Command: `uvicorn app.main:app --host 0.0.0.0 --port 7860`.
+    - **Dependencies**: T001, T002.
+    - **Definition of Done**: `docker build -t backend backend/` succeeds.
+- [x] T042 **Create .dockerignore**:
+    - **Description**: Create `backend/.dockerignore` to exclude unnecessary files (venv, tests, cache, git, etc.) from the build context.
+    - **Definition of Done**: The build context is small, and `__pycache__`/`.venv` are not copied.
+- [x] T043 **Update Deployment Documentation**:
+    - **Description**: Add a section to `DEPLOY.md` explaining how to deploy to Hugging Face Spaces using the Dockerfile.
+    - **Definition of Done**: Clear instructions for creating a Space and pushing the code.
