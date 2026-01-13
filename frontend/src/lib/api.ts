@@ -59,10 +59,18 @@ async function fetchApi(
     headers.set("Authorization", `Bearer ${token}`);
   }
 
+  // DEBUG: Log the request details
+  console.log(`[API] Fetching: ${url}`);
+  if (!token) console.log("[API] Warning: No token found for request.");
+
   const response = await fetch(url, { ...options, headers });
 
   if (!response.ok) {
     if (response.status === 401) {
+       console.error(`[API] 401 Unauthorized from: ${url}`);
+       const text = await response.text(); // Read body to see who sent 401 (HF or App)
+       console.error(`[API] 401 Body: ${text.substring(0, 500)}`);
+       
        // Server-side redirect to login on 401
        if (typeof window === "undefined") {
          redirect("/login");
