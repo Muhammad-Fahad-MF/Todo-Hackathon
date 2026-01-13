@@ -105,3 +105,6 @@ This document provides a complete, corrected, dependency-aware, and actionable c
 - [x] T035 [Refactor] **Implement Database-Backed Session Authentication**:
     - **Description**: Switch from JWT strategy to database-backed sessions. Remove JWT plugin from frontend configuration. Update backend `get_current_user` to verify opaque session tokens against the `Session` table instead of decoding JWTs.
     - **Rationale**: Simplifies architecture, avoids algorithm mismatches (EdDSA vs HS256), and enables instant session revocation.
+- [x] T036 [Refactor] **Enforce Strict Environment Variables**:
+    - **Description**: Remove `|| "http://localhost:..."` fallbacks in `frontend/src/lib/auth.ts` and `frontend/src/lib/api.ts`. Throw explicit errors if `NEXT_PUBLIC_APP_URL` or `NEXT_PUBLIC_API_URL` are missing.
+    - **Rationale**: Prevents deployed applications from silently falling back to localhost URLs when environment variables are misconfigured.

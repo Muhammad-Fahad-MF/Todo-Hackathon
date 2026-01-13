@@ -3,7 +3,15 @@ import { authClient } from "@/lib/auth";
 import { Task, TaskCreate, TaskUpdate } from "@/types/schemas";
 import { redirect } from "next/navigation";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+if (!API_URL) {
+  throw new Error("NEXT_PUBLIC_API_URL is not defined");
+}
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+if (!APP_URL) {
+  throw new Error("NEXT_PUBLIC_APP_URL is not defined");
+}
 
 async function fetchApi(
   url: string,
@@ -18,7 +26,7 @@ async function fetchApi(
     const cookie = headerList.get("cookie");
     
     // We can fetch the session from the internal auth API
-    const authUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/auth/get-session`;
+    const authUrl = `${APP_URL}/api/auth/get-session`;
     try {
       const sessionRes = await fetch(authUrl, {
         headers: { cookie: cookie || "" },
