@@ -2,7 +2,7 @@
 
 This project is configured for a hybrid deployment:
 - **Frontend:** Next.js (Deploy on **Vercel**)
-- **Backend:** FastAPI (Deploy on **Render**, **Railway**, or **Heroku**)
+- **Backend:** FastAPI (Deploy on **Render**, **Railway**, or **Vercel**)
 - **Database:** PostgreSQL (Recommend **Neon**, **Supabase**, or **Render Postgres**)
 
 ## 1. Database Setup (Neon PostgreSQL)
@@ -20,11 +20,11 @@ Add these to your Vercel project settings:
 | Variable | Description | Example Value |
 | :--- | :--- | :--- |
 | `DATABASE_URL` | **Pooled** Connection String for Auth | `postgres://user:pass@ep-xyz...` |
-| `NEXT_PUBLIC_API_URL` | URL of your deployed Backend | `https://my-backend.onrender.com` |
+| `NEXT_PUBLIC_API_URL` | URL of your deployed Backend | `https://my-backend.vercel.app` (or Render) |
 | `BETTER_AUTH_SECRET` | Random string (must match backend) | `super_secure_random_string` |
 | `BETTER_AUTH_URL` | URL of your deployed Frontend | `https://my-app.vercel.app` |
 
-### Backend (Render/Railway)
+### Backend (Render/Railway/Vercel)
 Add these to your backend service settings:
 
 | Variable | Description | Example Value |
@@ -52,17 +52,19 @@ Since we have two sources of schema (better-auth and our own models):
 
 ## 4. Deployment Steps
 
-### Backend
+### Backend (Render/Railway)
 1.  Push code to GitHub.
 2.  Connect repo to Render/Railway.
 3.  Set Build Command: `pip install -r requirements.txt` (or `uv sync` if using uv)
-    - *Note: Since you use `uv`, you might need to export requirements.txt or use a buildpack that supports uv.*
-    - **Recommended:** Generate `requirements.txt`:
-      ```bash
-      cd backend
-      uv pip compile pyproject.toml -o requirements.txt
-      ```
 4.  Set Start Command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+
+### Backend (Vercel)
+1.  Connect your repository to Vercel.
+2.  **Crucial:** Set the **Root Directory** to `backend`.
+3.  Vercel will auto-detect the `vercel.json` and Python runtime.
+4.  Add the Environment Variables (see Section 2).
+    - Note: `CORS_ORIGINS` must be a JSON array string: `["https://your-frontend.vercel.app"]`.
+5.  Deploy.
 
 ### Frontend
 1.  Connect repo to Vercel.

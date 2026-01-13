@@ -108,3 +108,14 @@ This document provides a complete, corrected, dependency-aware, and actionable c
 - [x] T036 [Refactor] **Enforce Strict Environment Variables**:
     - **Description**: Remove `|| "http://localhost:..."` fallbacks in `frontend/src/lib/auth.ts` and `frontend/src/lib/api.ts`. Throw explicit errors if `NEXT_PUBLIC_APP_URL` or `NEXT_PUBLIC_API_URL` are missing.
     - **Rationale**: Prevents deployed applications from silently falling back to localhost URLs when environment variables are misconfigured.
+
+---
+
+### Milestone 7: Vercel Backend Deployment
+
+**Goal**: Configure the Python backend for deployment as a Vercel Serverless Function.
+
+- [x] T037 Create `backend/vercel.json` to route all traffic to `main.py`.
+- [x] T038 Ensure `backend/requirements.txt` is up-to-date and includes all production dependencies.
+- [x] T039 Update `DEPLOY.md` to include instructions for deploying the backend on Vercel.
+- [x] T040 [P] Verify backend environment variable parsing for Vercel (JSON strings for lists).
