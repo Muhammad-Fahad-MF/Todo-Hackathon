@@ -102,3 +102,6 @@ This document provides a complete, corrected, dependency-aware, and actionable c
     - **Description**: Add a prominent docstring/comment in `backend/app/main.py` (and potentially a dummy route `/api/auth/info`) explaining that Authentication is handled by the Next.js frontend (Better-Auth) and that the Backend only verifies tokens. This addresses the confusion of "missing" auth routes.
 - [x] T034 [Fix] **Verify Middleware Cookie Name**:
     - **Description**: Check `frontend/src/middleware.ts`. It uses a hardcoded `SESSION_COOKIE_NAME = 'session'`. Better-Auth default is often `better-auth.session_token`. Update logic to check the correct cookie or use Better-Auth's middleware helper if available.
+- [x] T035 [Refactor] **Implement Database-Backed Session Authentication**:
+    - **Description**: Switch from JWT strategy to database-backed sessions. Remove JWT plugin from frontend configuration. Update backend `get_current_user` to verify opaque session tokens against the `Session` table instead of decoding JWTs.
+    - **Rationale**: Simplifies architecture, avoids algorithm mismatches (EdDSA vs HS256), and enables instant session revocation.

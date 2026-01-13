@@ -1,6 +1,7 @@
 // @/lib/api.ts
 import { authClient } from "@/lib/auth";
 import { Task, TaskCreate, TaskUpdate } from "@/types/schemas";
+import { redirect } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -8,9 +9,41 @@ async function fetchApi(
   url: string,
   options: RequestInit = {}
 ): Promise<Response> {
-  const { data } = await authClient.getSession();
-  const token = data?.session?.token;
+  let token: string | undefined;
 
+  if (typeof window === "undefined") {
+    // Server-side: Get token from headers/cookies
+    const { headers } = await import("next/headers");
+    const headerList = await headers();
+    const cookie = headerList.get("cookie");
+    
+    // We can fetch the session from the internal auth API
+    const authUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/auth/get-session`;
+    try {
+      const sessionRes = await fetch(authUrl, {
+        headers: { cookie: cookie || "" },
+      });
+      if (sessionRes.ok) {
+        const sessionData = await sessionRes.json();
+        token = sessionData?.session?.token;
+      }
+    } catch (e) {
+      console.error("Error fetching session on server:", e);
+    }
+  } else {
+    // Client-side: use authClient
+    const { data } = await authClient.getSession();
+    token = data?.session?.token;
+  }
+  
+  // DEBUG: Log the token details
+  if (token) {
+    const isJwt = token.split(".").length === 3;
+    console.log(`DEBUG: Sending Token (${isJwt ? "JWT" : "Opaque"}):`, token.substring(0, 20) + "...");
+  } else {
+    console.log("DEBUG: No token found to send");
+  }
+  
   const headers = new Headers(options.headers);
   
   if (!headers.has("Content-Type")) {
@@ -25,9 +58,9 @@ async function fetchApi(
 
   if (!response.ok) {
     if (response.status === 401) {
-       // Optional: Redirect to login or handle session expiration
-       if (typeof window !== "undefined") {
-         // window.location.href = "/login"; // Only redirect if strictly necessary
+       // Server-side redirect to login on 401
+       if (typeof window === "undefined") {
+         redirect("/login");
        }
     }
     const errorBody = await response.json().catch(() => ({}));

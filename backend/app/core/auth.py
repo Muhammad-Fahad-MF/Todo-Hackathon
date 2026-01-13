@@ -1,10 +1,10 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
-import jwt
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.config import settings
-from app.models.models import User
+from sqlmodel import select
+from datetime import datetime
+from app.models.models import User, Session
 from app.db.session import get_session
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -15,25 +15,38 @@ class CurrentUser(BaseModel):
 
 async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_session)) -> CurrentUser:
     """
-    Decodes the JWT, queries the database for the user,
-    and handles exceptions for invalid tokens.
+    Validates the opaque session token by querying the database.
     """
     try:
-        # better-auth jwt plugin uses the secret to sign. Default alg is HS256.
-        payload = jwt.decode(token, settings.BETTER_AUTH_SECRET, algorithms=["HS256"])
+        print(f"DEBUG: Verifying Session Token: {token}")
         
-        # specific to better-auth: user_id might be in 'sub' or 'id'
-        user_id: str = payload.get("sub") or payload.get("id")
+        # 1. Lookup session in DB
+        statement = select(Session).where(Session.token == token)
+        result = await db.execute(statement)
+        session_record = result.scalar_one_or_none()
         
-        if user_id is None:
+        if not session_record:
+            print("DEBUG: Session not found in DB")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid authentication credentials: No user ID found in token",
+                detail="Invalid session token",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-            
-        user = await db.get(User, user_id)
+
+        # 2. Check expiration
+        # datetime.utcnow() is naive, ensuring compatibility with naive DB timestamps
+        if session_record.expiresAt < datetime.utcnow():
+            print(f"DEBUG: Session expired at {session_record.expiresAt}")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Session expired",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        # 3. Get User
+        user = await db.get(User, session_record.userId)
         if user is None:
+            print("DEBUG: Associated user not found")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="User not found",
@@ -41,15 +54,13 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
             )
             
         return CurrentUser(id=user.id, email=user.email)
-    except jwt.ExpiredSignatureError:
+
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        print(f"DEBUG: Auth Error: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token has expired",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    except jwt.PyJWTError as e:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Invalid authentication credentials: {str(e)}",
+            detail="Authentication failed",
             headers={"WWW-Authenticate": "Bearer"},
         )
