@@ -4,7 +4,10 @@
 import { useEffect } from "react";
 import { useTaskStore } from "@/lib/store";
 import { Task } from "@/types/schemas";
-import { updateTask as apiUpdateTask, deleteTask as apiDeleteTask } from "@/lib/api";
+import {
+  updateTask as apiUpdateTask,
+  deleteTask as apiDeleteTask,
+} from "@/lib/api";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -22,12 +25,17 @@ export function TaskList({ initialTasks }: TaskListProps) {
   }, [initialTasks, setTasks]);
 
   const handleToggle = async (id: number, is_completed: boolean) => {
+    if (is_completed) {
+      toast.info("Task is already completed.");
+      return;
+    }
+
     const originalTasks = tasks;
-    updateTask(id, { is_completed: !is_completed });
+    updateTask(id, { is_completed: true });
 
     try {
-      await apiUpdateTask(id, { is_completed: !is_completed });
-      toast.success(`Task ${!is_completed ? "completed" : "marked as pending"}.`);
+      await apiUpdateTask(id, { is_completed: true });
+      toast.success("Task completed!");
     } catch (error) {
       setTasks(originalTasks);
       toast.error("Failed to update task.");
@@ -51,9 +59,7 @@ export function TaskList({ initialTasks }: TaskListProps) {
     return (
       <div className="text-center py-12">
         <h3 className="text-lg font-medium">No tasks yet!</h3>
-        <p className="text-muted-foreground">
-          Add a new task to get started.
-        </p>
+        <p className="text-muted-foreground">Add a new task to get started.</p>
       </div>
     );
   }
@@ -73,6 +79,7 @@ export function TaskList({ initialTasks }: TaskListProps) {
                 handleToggle(task.id, task.is_completed ?? false);
               }
             }}
+            disabled={task.is_completed}
           />
           <label
             htmlFor={`task-${task.id}`}
@@ -80,7 +87,12 @@ export function TaskList({ initialTasks }: TaskListProps) {
               task.is_completed ? "line-through text-muted-foreground" : ""
             }`}
           >
-            {task.title}
+            <span className="font-bold">{task.title}</span>
+            {task.description && (
+              <p className="text-xs text-muted-foreground">
+                {task.description}
+              </p>
+            )}
           </label>
           <Button
             variant="ghost"

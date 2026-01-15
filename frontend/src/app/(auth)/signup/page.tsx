@@ -9,6 +9,7 @@ import { authClient } from '@/lib/auth';
 
 const SignupSchema = z
   .object({
+    name: z.string().min(3, { message: 'Name must be at least 3 characters long' }),
     email: z.string().email({ message: 'Invalid email address' }),
     password: z.string().min(8, { message: 'Password must be at least 8 characters long' }),
     confirmPassword: z.string(),
@@ -21,12 +22,16 @@ const SignupSchema = z
 type FormData = z.infer<typeof SignupSchema>;
 
 export default function SignupPage() {
-  const [formData, setFormData] = useState<FormData>({ email: '', password: '', confirmPassword: '' });
+  const [formData, setFormData] = useState<FormData>({ name: '', email: '', password: '', confirmPassword: '' });
   const [errors, setErrors] = useState<z.ZodError | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors(null);
+    setServerError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,18 +44,34 @@ export default function SignupPage() {
     }
 
     setErrors(null);
+    setServerError(null);
+    setIsSubmitting(true);
 
     try {
-      await authClient.signUp.email({ 
-        email: result.data.email, 
-        password: result.data.password, 
-        name: result.data.email.split('@')[0] 
+      const { user, error } = await authClient.signUp.email({
+        name: result.data.name,
+        email: result.data.email,
+        password: result.data.password,
       });
-      toast.success('Signup successful!');
-      router.push('/dashboard');
-    } catch (error) {
-      console.error('Signup failed:', error);
-      toast.error('Signup failed. Please try again.');
+
+      if (error) {
+        const errorMessage = error.message || 'Signup failed. Please try again.';
+        // 409 Conflict for "User already exists"
+        if (error.status === 409) {
+          setServerError(errorMessage);
+        }
+        return;
+      }
+
+      if (user) {
+        toast.success('Signup successful! Redirecting to dashboard...');
+        router.push('/dashboard');
+      }
+    } catch (e: any) {
+      console.error('Signup failed unexpectedly:', e);
+      toast.error('An unexpected error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -59,6 +80,21 @@ export default function SignupPage() {
       <Toaster />
       <form onSubmit={handleSubmit} className="bg-card text-card-foreground p-8 rounded-xl border border-border shadow-lg w-96">
         <h1 className="text-2xl font-bold mb-6 text-center text-primary">Sign Up</h1>
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Name</label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-input bg-background rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm"
+          />
+          {errors?.issues.find((issue) => issue.path[0] === 'name') && (
+            <p className="text-accent2 text-xs mt-1">
+              {errors.issues.find((issue) => issue.path[0] === 'name')?.message}
+            </p>
+          )}
+        </div>
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Email</label>
           <input
@@ -72,6 +108,9 @@ export default function SignupPage() {
             <p className="text-accent2 text-xs mt-1">
               {errors.issues.find((issue) => issue.path[0] === 'email')?.message}
             </p>
+          )}
+          {serverError && (
+            <p className="text-accent2 text-xs mt-1">{serverError}</p>
           )}
         </div>
         <div className="mb-4">
@@ -106,7 +145,8 @@ export default function SignupPage() {
         </div>
         <button
           type="submit"
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-foreground bg-primary hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
+          disabled={isSubmitting}
+          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-foreground bg-primary hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors disabled:opacity-50"
         >
           Sign Up
         </button>

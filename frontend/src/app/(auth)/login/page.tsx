@@ -17,10 +17,14 @@ type FormData = z.infer<typeof LoginSchema>;
 export default function LoginPage() {
   const [formData, setFormData] = useState<FormData>({ email: '', password: '' });
   const [errors, setErrors] = useState<z.ZodError | null>(null);
+  const [serverError, setServerError] = useState<{field: 'email' | 'password', message: string} | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors(null);
+    setServerError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,14 +37,35 @@ export default function LoginPage() {
     }
 
     setErrors(null);
+    setServerError(null);
+    setIsSubmitting(true);
 
     try {
-      await authClient.signIn.email({ email: result.data.email, password: result.data.password });
-      toast.success('Login successful!');
-      router.push('/dashboard');
-    } catch (error) {
-      console.error('Login failed:', error);
-      toast.error('Login failed. Please check your credentials.');
+      const { user, error } = await authClient.signIn.email({
+        email: result.data.email,
+        password: result.data.password,
+      });
+
+      if (error) {
+        const errorMessage = error.message || 'Invalid email or password.';
+        if (error.status === 401) { // 401 for Invalid credentials
+          setServerError({ field: 'password', message: errorMessage });
+        } else { // Other errors (like 404 Not Found) on email
+          setServerError({ field: 'email', message: errorMessage });
+        }
+        return;
+      }
+
+      if (user) {
+        toast.success('Login successful! Redirecting to dashboard...');
+        router.push('/dashboard');
+      }
+      
+    } catch (e: any) {
+        console.error('Login failed unexpectedly:', e);
+        toast.error('An unexpected error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -63,6 +88,9 @@ export default function LoginPage() {
               {errors.issues.find((issue) => issue.path[0] === 'email')?.message}
             </p>
           )}
+          {serverError?.field === 'email' && (
+            <p className="text-accent2 text-xs mt-1">{serverError.message}</p>
+          )}
         </div>
         <div className="mb-6">
           <label className="block text-sm font-medium mb-1">Password</label>
@@ -78,10 +106,14 @@ export default function LoginPage() {
               {errors.issues.find((issue) => issue.path[0] === 'password')?.message}
             </p>
           )}
+          {serverError?.field === 'password' && (
+            <p className="text-accent2 text-xs mt-1">{serverError.message}</p>
+          )}
         </div>
         <button
           type="submit"
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-foreground bg-primary hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
+          disabled={isSubmitting}
+          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-foreground bg-primary hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors disabled:opacity-50"
         >
           Login
         </button>

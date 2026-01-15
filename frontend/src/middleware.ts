@@ -1,15 +1,20 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const SESSION_COOKIE_NAME = 'better-auth.session_token'; // Default Better-Auth session cookie name
-
 function getSessionCookie(request: NextRequest): string | undefined {
-  const sessionCookie = request.cookies.get(SESSION_COOKIE_NAME);
+  // Check for both standard and secure cookie names
+  const sessionCookie = request.cookies.get('better-auth.session_token') || 
+                        request.cookies.get('__Secure-better-auth.session_token');
   return sessionCookie?.value;
 }
 
 export async function middleware(request: NextRequest) {
   const sessionCookie = getSessionCookie(request);
+
+  // DEBUG: Log cookies to Vercel logs to see what's actually present
+  console.log(`[Middleware] Path: ${request.nextUrl.pathname}`);
+  console.log(`[Middleware] Cookies present: ${request.cookies.getAll().map(c => c.name).join(', ')}`);
+  console.log(`[Middleware] Session found: ${!!sessionCookie}`);
 
   const protectedRoutes = ['/dashboard']; 
 
@@ -18,6 +23,7 @@ export async function middleware(request: NextRequest) {
   );
 
   if (isProtectedRoute && !sessionCookie) {
+    console.log(`[Middleware] Redirecting to login from ${request.nextUrl.pathname}`);
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('redirect', request.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
@@ -29,6 +35,7 @@ export async function middleware(request: NextRequest) {
   );
 
   if (isAuthRoute && sessionCookie) {
+    console.log(`[Middleware] Redirecting to dashboard from ${request.nextUrl.pathname}`);
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 

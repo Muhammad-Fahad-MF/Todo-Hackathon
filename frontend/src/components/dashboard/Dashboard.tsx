@@ -37,7 +37,7 @@ export function Dashboard({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid gap-8 grid-cols-1">
         <Card>
           <CardHeader>
             <CardTitle>Add a New Task</CardTitle>

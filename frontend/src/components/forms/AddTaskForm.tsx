@@ -11,6 +11,7 @@ import { useTaskStore } from "@/lib/store";
 
 export function AddTaskForm() {
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const addTask = useTaskStore((state) => state.addTask);
 
@@ -23,11 +24,12 @@ export function AddTaskForm() {
 
     setIsSubmitting(true);
     try {
-      const newTaskData: TaskCreate = { title, description: "" }; // Assuming description is optional
+      const newTaskData: TaskCreate = { title, description };
       const newTask = await createTask(newTaskData);
       addTask(newTask);
       toast.success("Task added successfully!");
       setTitle("");
+      setDescription("");
     } catch (error) {
       if (error instanceof Error) {
         toast.error(`Failed to add task: ${error.message}`);
@@ -40,7 +42,7 @@ export function AddTaskForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-2">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <Input
         type="text"
         value={title}
@@ -49,7 +51,15 @@ export function AddTaskForm() {
         disabled={isSubmitting}
         className="flex-grow"
       />
-      <Button type="submit" disabled={isSubmitting}>
+      <Input
+        type="text"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="Add a description..."
+        disabled={isSubmitting}
+        className="flex-grow"
+      />
+      <Button type="submit" disabled={isSubmitting} className="w-full">
         {isSubmitting ? "Adding..." : "Add Task"}
       </Button>
     </form>
