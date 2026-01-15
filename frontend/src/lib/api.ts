@@ -68,11 +68,15 @@ async function fetchApi(
   if (!response.ok) {
     if (response.status === 401) {
        console.error(`[API] 401 Unauthorized from: ${url}`);
-       const text = await response.text(); // Read body to see who sent 401 (HF or App)
+       const text = await response.text().catch(() => "Could not read error body");
        console.error(`[API] 401 Body: ${text.substring(0, 500)}`);
        
-       // Server-side redirect to login on 401
-       if (typeof window === "undefined") {
+       if (typeof window !== "undefined") {
+         // Client-side: sign out and redirect
+         await authClient.signOut({ redirect: false });
+         window.location.href = "/login";
+       } else {
+         // Server-side: redirect to login
          redirect("/login");
        }
     }
