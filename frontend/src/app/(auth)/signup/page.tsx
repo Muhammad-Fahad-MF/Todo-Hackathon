@@ -48,22 +48,22 @@ export default function SignupPage() {
     setIsSubmitting(true);
 
     try {
-      const { user, error } = await authClient.signUp.email({
+      const response = await authClient.signUp.email({
         name: result.data.name,
         email: result.data.email,
         password: result.data.password,
       });
 
-      if (error) {
-        const errorMessage = error.message || 'Signup failed. Please try again.';
+      if (response.error) {
+        const errorMessage = response.error.message || 'Signup failed. Please try again.';
         // 409 Conflict for "User already exists"
-        if (error.status === 409) {
+        if (response.error.status === 409) {
           setServerError(errorMessage);
         }
         return;
       }
 
-      if (user) {
+      if (response.data.user) {
         toast.success('Signup successful! Redirecting to dashboard...');
         router.push('/dashboard');
       }

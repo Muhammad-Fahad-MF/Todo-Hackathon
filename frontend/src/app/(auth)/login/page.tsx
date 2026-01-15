@@ -41,14 +41,14 @@ export default function LoginPage() {
     setIsSubmitting(true);
 
     try {
-      const { user, error } = await authClient.signIn.email({
+      const response = await authClient.signIn.email({
         email: result.data.email,
         password: result.data.password,
       });
 
-      if (error) {
-        const errorMessage = error.message || 'Invalid email or password.';
-        if (error.status === 401) { // 401 for Invalid credentials
+      if (response.error) {
+        const errorMessage = response.error.message || 'Invalid email or password.';
+        if (response.error.status === 401) { // 401 for Invalid credentials
           setServerError({ field: 'password', message: errorMessage });
         } else { // Other errors (like 404 Not Found) on email
           setServerError({ field: 'email', message: errorMessage });
@@ -56,7 +56,7 @@ export default function LoginPage() {
         return;
       }
 
-      if (user) {
+      if (response.data.user) {
         toast.success('Login successful! Redirecting to dashboard...');
         router.push('/dashboard');
       }
