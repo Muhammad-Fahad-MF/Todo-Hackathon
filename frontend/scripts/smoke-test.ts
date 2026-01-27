@@ -64,3 +64,5 @@ async function testConnection() {
 }
 
 testConnection();
+
+export {};

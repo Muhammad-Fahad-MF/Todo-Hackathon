@@ -91,3 +91,5 @@ async function testProxy() {
 }
 
 testProxy();
+
+export {};
