@@ -55,6 +55,7 @@ export default function SignupPage() {
       });
 
       if (response.error) {
+        console.error('Signup failed:', response);
         const errorMessage = response.error.message || 'Signup failed. Please try again.';
         // 409 Conflict for "User already exists"
         if (response.error.status === 409) {

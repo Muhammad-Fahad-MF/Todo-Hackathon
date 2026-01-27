@@ -1,0 +1,10 @@
+{
+  "name": "root-project",
+  "private": true,
+  "workspaces": [
+    "frontend"
+  ],
+  "dependencies": {
+    "next-devtools-mcp": "^0.3.10"
+  }
+}

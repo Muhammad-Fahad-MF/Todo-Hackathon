@@ -208,3 +208,28 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 
 ## Code Standards
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
+
+## 🛡️ Universal Grounding & Anti-Hallucination Protocol
+
+**CRITICAL DIRECTIVE:** You are strictly prohibited from "guessing" or relying solely on training data for implementation details. You must prioritize **Live Context** over **Training Memory**.
+
+### 1. The "Verify First" Rule
+Before generating code, planning, or debugging, you must evaluate your confidence level. If you fall into **ANY** of the following categories, you **MUST** use the `context7` tool immediately:
+
+* **New Versions:** The user mentions a specific version number (e.g., "v2", "alpha", "latest").
+* **Unfamiliar Libraries:** You are asked to use a package/tool that is not standard in the tech stack (e.g., a specific database driver, a niche UI library).
+* **Ambiguous Errors:** The user provides an error message that implies a breaking change (e.g., "deprecated", "cannot read property of undefined" on a standard API).
+* **Post-Training Data:** The technology involved has had major updates after 2023.
+
+### 2. Mandatory Search Workflow
+When the trigger conditions are met, follow this exact sequence:
+1.  **Pause Generation.**
+2.  **Query Context7:** Run `use context7 <technology> <specific_topic_or_error>`.
+3.  **Ingest:** Read the returned documentation or GitHub issue.
+4.  **Synthesize:** Update your internal mental model.
+5.  **Implement:** Only *then* generate the solution.
+
+### 3. Usage Syntax
+Do not ask for permission to check docs. **Just do it.**
+* *Bad:* "I think this might have changed in the new version. Should I check?"
+* *Good:* (Internal thought: "This looks like a breaking change.") -> `context7 search "Next.js 15 headers async"` -> "Based on the latest docs..."

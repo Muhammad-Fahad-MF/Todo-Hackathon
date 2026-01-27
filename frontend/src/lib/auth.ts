@@ -7,6 +7,7 @@ if (!baseURL) {
 
 export const authClient = createAuthClient({
   baseURL,
+  refetchInterval: 0, // Disable polling
 });
 
 export const { useSession, signIn, signOut, signUp } = authClient;

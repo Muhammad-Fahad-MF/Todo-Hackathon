@@ -11,14 +11,18 @@ export interface Task {
   title: string;
   description?: string | null;
   is_completed?: boolean;
-  user_id?: number | null;
+  user_id?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
 }
 export interface User {
-  id?: number | null;
+  id: string;
   email: string;
-  hashed_password: string;
+  name?: string | null;
+  image?: string | null;
+  emailVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface TaskCreate {

@@ -27,7 +27,7 @@ export function Dashboard({ children }: { children: React.ReactNode }) {
       <header className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-primary">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back, {session?.user?.email}</p>
+          <p className="text-muted-foreground">Welcome back, {session?.user?.name}</p>
         </div>
         <div className="flex items-center gap-4">
           <ModeToggle />

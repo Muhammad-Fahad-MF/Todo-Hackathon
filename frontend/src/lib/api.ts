@@ -13,87 +13,93 @@ if (!APP_URL) {
   throw new Error("NEXT_PUBLIC_APP_URL is not defined");
 }
 
+const getBaseUrl = () => {
+  if (typeof window === "undefined") {
+    return API_URL;
+  }
+  return "/api/external";
+};
+
 async function fetchApi(
   url: string,
   options: RequestInit = {}
 ): Promise<Response> {
-  let token: string | undefined;
+  const allHeaders = new Headers(options.headers);
+  const isServer = typeof window === "undefined";
+  const method = options.method || "GET";
 
-  if (typeof window === "undefined") {
-    // Server-side: Get token from headers/cookies
-    const { headers } = await import("next/headers");
-    // Dynamic import to avoid bundling server-side dependencies (pg, fs) in client bundle
-    const { auth } = await import("@/lib/auth-server");
-    const headerList = await headers();
-    
+  if (isServer) {
+    // This is a server-side component.
+    // We can access request headers and forward the session cookie.
     try {
-      // Direct function call avoids network round-trip issues
-      const session = await auth.api.getSession({
-        headers: headerList,
-      });
-      token = session?.session?.token;
-    } catch (e) {
-      console.error("Error fetching session on server:", e);
+      const { cookies } = await import("next/headers");
+      const cookieStore = await cookies();
+      const sessionToken = cookieStore.get("better-auth.session_token")?.value;
+      const secureSessionToken = cookieStore.get("__Secure-better-auth.session_token")?.value;
+
+      if (sessionToken) {
+        allHeaders.set("Cookie", `better-auth.session_token=${sessionToken}`);
+      }
+      
+      if (secureSessionToken) {
+        const existingCookie = allHeaders.get("Cookie") || "";
+        const secureCookie = `__Secure-better-auth.session_token=${secureSessionToken}`;
+        allHeaders.set("Cookie", existingCookie ? `${existingCookie}; ${secureCookie}` : secureCookie);
+      }
+
+      if (!sessionToken && !secureSessionToken) {
+        // Redirect to login if no session token is found on the server
+        redirect("/login");
+      }
+    } catch (error: any) {
+      if (error?.digest?.startsWith?.("NEXT_REDIRECT")) {
+        throw error;
+      }
+      console.error("[API] Error getting session token:", error);
     }
-  } else {
-    // Client-side: use authClient
-    const { data } = await authClient.getSession();
-    token = data?.session?.token;
   }
+  // On the client, cookies are automatically sent thanks to credentials: 'include'
   
-  // DEBUG: Log the token details
-  if (token) {
-    const isJwt = token.split(".").length === 3;
-    console.log(`DEBUG: Sending Token (${isJwt ? "JWT" : "Opaque"}):`, token.substring(0, 20) + "...");
-  } else {
-    console.log("DEBUG: No token found to send");
-  }
-  
-  const headers = new Headers(options.headers);
-  
-  if (!headers.has("Content-Type")) {
-    headers.set("Content-Type", "application/json");
+  if (!allHeaders.has("Content-Type")) {
+    allHeaders.set("Content-Type", "application/json");
   }
 
-  if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
-  }
-
-  // DEBUG: Log the request details
-  console.log(`[API] Fetching: ${url}`);
-  if (!token) console.log("[API] Warning: No token found for request.");
-
-  const response = await fetch(url, { ...options, headers });
+  const response = await fetch(url, { 
+    ...options, 
+    headers: allHeaders,
+    credentials: 'include' // Allow sending cookies in cross-origin requests
+  });
 
   if (!response.ok) {
     if (response.status === 401) {
        console.error(`[API] 401 Unauthorized from: ${url}`);
-       const text = await response.text().catch(() => "Could not read error body");
-       console.error(`[API] 401 Body: ${text.substring(0, 500)}`);
-       
        if (typeof window !== "undefined") {
-         // Client-side: sign out and redirect
-         await authClient.signOut({ redirect: false });
+         // Don't call signOut() automatically as it might be a transient or configuration error
          window.location.href = "/login";
        } else {
-         // Server-side: redirect to login
-         redirect("/login");
+         // Server-side: Redirect to reset-auth to clear cookies, then to login/signup
+         redirect("/api/reset-auth");
        }
     }
     const errorBody = await response.json().catch(() => ({}));
     console.error("API Error:", response.status, errorBody);
-    throw new Error(
-      `API request failed with status ${response.status}: ${
-        errorBody.detail || response.statusText
-      }`
-    );
+    
+    // Improved error message extraction
+    let errorMessage = response.statusText;
+    if (errorBody.detail) {
+      errorMessage = typeof errorBody.detail === 'string' 
+        ? errorBody.detail 
+        : JSON.stringify(errorBody.detail);
+    }
+
+    throw new Error(`API request failed: ${errorMessage}`);
   }
 
   return response;
 }
 
 export const getTasks = async (): Promise<Task[]> => {
-  const response = await fetchApi(`${API_URL}/api/v1/tasks`, {
+  const response = await fetchApi(`${getBaseUrl()}/api/v1/tasks/`, {
     method: "GET",
     cache: "no-store", // Ensure fresh data
   });
@@ -101,7 +107,7 @@ export const getTasks = async (): Promise<Task[]> => {
 };
 
 export const createTask = async (taskData: TaskCreate): Promise<Task> => {
-  const response = await fetchApi(`${API_URL}/api/v1/tasks`, {
+  const response = await fetchApi(`${getBaseUrl()}/api/v1/tasks/`, {
     method: "POST",
     body: JSON.stringify(taskData),
   });
@@ -112,7 +118,7 @@ export const updateTask = async (
   id: number,
   taskData: TaskUpdate
 ): Promise<Task> => {
-  const response = await fetchApi(`${API_URL}/api/v1/tasks/${id}`, {
+  const response = await fetchApi(`${getBaseUrl()}/api/v1/tasks/${id}`, {
     method: "PUT",
     body: JSON.stringify(taskData),
   });
@@ -120,7 +126,7 @@ export const updateTask = async (
 };
 
 export const deleteTask = async (id: number): Promise<void> => {
-  await fetchApi(`${API_URL}/api/v1/tasks/${id}`, {
+  await fetchApi(`${getBaseUrl()}/api/v1/tasks/${id}`, {
     method: "DELETE",
   });
 };

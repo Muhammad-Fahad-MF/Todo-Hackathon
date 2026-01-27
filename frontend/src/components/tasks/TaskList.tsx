@@ -24,19 +24,18 @@ export function TaskList({ initialTasks }: TaskListProps) {
     setTasks(initialTasks);
   }, [initialTasks, setTasks]);
 
-  const handleToggle = async (id: number, is_completed: boolean) => {
-    if (is_completed) {
-      toast.info("Task is already completed.");
-      return;
-    }
-
+  const handleToggle = async (id: number, currentStatus: boolean) => {
+    const newStatus = !currentStatus;
     const originalTasks = tasks;
-    updateTask(id, { is_completed: true });
+    
+    // Optimistic update
+    updateTask(id, { is_completed: newStatus });
 
     try {
-      await apiUpdateTask(id, { is_completed: true });
-      toast.success("Task completed!");
+      await apiUpdateTask(id, { is_completed: newStatus });
+      toast.success(newStatus ? "Task completed!" : "Task reopened.");
     } catch (error) {
+      // Rollback on failure
       setTasks(originalTasks);
       toast.error("Failed to update task.");
     }
@@ -79,7 +78,6 @@ export function TaskList({ initialTasks }: TaskListProps) {
                 handleToggle(task.id, task.is_completed ?? false);
               }
             }}
-            disabled={task.is_completed}
           />
           <label
             htmlFor={`task-${task.id}`}

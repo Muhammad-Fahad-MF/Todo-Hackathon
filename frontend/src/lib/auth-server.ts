@@ -1,18 +1,23 @@
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
 import { Pool } from "pg";
-import PgAdapter from "@auth/pg-adapter"
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : undefined,
-})
+  // Neon DB requires SSL. This ensures SSL is enabled if the database URL is not localhost.
+  ssl: process.env.DATABASE_URL?.includes("localhost")
+    ? undefined
+    : { rejectUnauthorized: false },
+});
 
 export const auth = betterAuth({
-  adapter: PgAdapter(pool),
+  database: pool,
   secret: process.env.BETTER_AUTH_SECRET,
   emailAndPassword: {
     enabled: true,
+  },
+  advanced: {
+    useSecureCookies: process.env.NODE_ENV === "production",
   },
   plugins: [
     nextCookies(),

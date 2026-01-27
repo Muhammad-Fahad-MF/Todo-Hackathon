@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { Suspense } from 'react';
 import { Dashboard } from '@/components/dashboard/Dashboard';
 import { getTasks } from '@/lib/api';
