@@ -1,6 +1,5 @@
 // @/lib/api.ts
-import { authClient } from "@/lib/auth";
-import { Task, TaskCreate, TaskUpdate } from "@/types/schemas";
+import { Task, TaskCreate, TaskUpdate, ChatRequest, ChatResponse, ChatHistoryResponse } from "@/types/schemas";
 import { redirect } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -127,6 +126,28 @@ export const updateTask = async (
 
 export const deleteTask = async (id: number): Promise<void> => {
   await fetchApi(`${getBaseUrl()}/api/v1/tasks/${id}`, {
+    method: "DELETE",
+  });
+};
+
+export const sendChatMessage = async (data: ChatRequest): Promise<ChatResponse> => {
+  const response = await fetchApi(`${getBaseUrl()}/api/v1/chat`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+  return response.json();
+};
+
+export const fetchChatHistory = async (): Promise<ChatHistoryResponse> => {
+  const response = await fetchApi(`${getBaseUrl()}/api/v1/chat/history`, {
+    method: "GET",
+    cache: "no-store",
+  });
+  return response.json();
+};
+
+export const clearChatHistory = async (): Promise<void> => {
+  await fetchApi(`${getBaseUrl()}/api/v1/chat/history`, {
     method: "DELETE",
   });
 };

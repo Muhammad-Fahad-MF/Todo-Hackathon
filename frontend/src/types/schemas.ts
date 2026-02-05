@@ -42,3 +42,24 @@ export interface TaskUpdate {
   description?: string | null;
   is_completed?: boolean | null;
 }
+
+export interface ChatRequest {
+  message: string;
+  conversation_id?: string | null;
+}
+
+export interface ChatResponse {
+  response: string;
+  conversation_id: string;
+  tool_calls?: any[];
+}
+
+export interface MessageSchema {
+  role: string;
+  content: string;
+}
+
+export interface ChatHistoryResponse {
+  conversation_id: string | null;
+  messages: MessageSchema[];
+}
