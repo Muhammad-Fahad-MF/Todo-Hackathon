@@ -163,3 +163,74 @@ Contributions are welcome! Please feel free to open issues or submit pull reques
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## ☸️ Phase 4: Local Kubernetes Deployment (Minikube)
+
+In this phase, we moved the application from a simple local process to a production-grade Kubernetes cluster running locally on **Minikube**.
+
+### 1. Why Kubernetes?
+Unlike running `npm run dev` or `uvicorn`, Kubernetes (K8s) manages the "lifecycle" of your app. If a container crashes, K8s restarts it. It also handles internal routing (Ingress), secret management, and security policies (non-root users) out of the box.
+
+### 2. The "Last Mile" Challenge
+Since the app is running *inside* a virtualized cluster, your browser on the host machine doesn't know how to find it. We solve this with two steps:
+1.  **Local DNS**: Mapping `todo.local` to the cluster's IP.
+2.  **Network Tunnel**: Creating a bridge between your machine and the cluster's internal network.
+
+### 3. Step-by-Step Guide
+
+#### **Prerequisites**
+- [Minikube](https://minikube.sigs.k8s.io/docs/start/) installed.
+- [Helm](https://helm.sh/docs/intro/install/) installed.
+- Addons enabled: `minikube addons enable ingress metrics-server`.
+
+#### **A. Point Docker to Minikube**
+Before building images, tell your terminal to use Minikube's internal Docker daemon. This avoids the need to push images to the cloud.
+```bash
+eval $(minikube docker-env)
+```
+
+#### **B. Build the Images**
+```bash
+docker build -t todo-backend:latest ./backend
+docker build -t todo-frontend:latest ./frontend
+```
+
+#### **C. Set up Secrets**
+Create `kubernetes/helm/todo-app/secrets.yaml` (this file is git-ignored for safety):
+```yaml
+secrets:
+  DATABASE_URL: "your-neon-db-url"
+  BETTER_AUTH_SECRET: "your-auth-secret"
+  GROQ_API_KEY: "your-groq-key"
+```
+
+#### **D. Deploy with Helm**
+Helm is the "Package Manager" for Kubernetes. It installs all components (Backend, Frontend, Ingress, Secrets) in one command:
+```bash
+helm upgrade --install todo-app ./kubernetes/helm/todo-app --values ./kubernetes/helm/todo-app/secrets.yaml
+```
+
+#### **E. Connectivity (Crucial)**
+1.  **Get Cluster IP**: Run `minikube ip` (e.g., `192.168.49.2`).
+2.  **Update Hosts**: Add the IP to your hosts file:
+    - **Linux/WSL**: `sudo nano /etc/hosts` -> add `192.168.49.2 todo.local`
+    - **Windows**: Edit `C:\Windows\System32\drivers\etc\hosts` (as Admin).
+3.  **Start Tunnel**: **Open a new terminal** and run:
+    ```bash
+    minikube tunnel
+    ```
+    *Keep this running while you use the app.*
+
+### 4. Verification
+Once deployed, you can verify the setup with the automated script:
+```bash
+./scripts/k8s/verify-deployment.sh
+```
+Or manually:
+- **Frontend**: Visit [http://todo.local](http://todo.local)
+- **Backend Health**: Visit [http://todo.local/api/health](http://todo.local/api/health)
+
+### 5. Troubleshooting
+- **503 Service Unavailable**: The pods are still starting up or the database connection is slow. Wait 30 seconds.
+- **Connection Refused**: Ensure `minikube tunnel` is active.
+- **ImagePullBackOff**: You forgot to run `eval $(minikube docker-env)` before building your images.

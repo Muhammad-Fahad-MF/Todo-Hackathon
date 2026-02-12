@@ -47,10 +47,16 @@ fi
 
 echo "🔄 Generating TypeScript interfaces from Pydantic models..."
 
+# Add local node_modules binary to PATH
+export PATH="$PWD/frontend/node_modules/.bin:$PATH"
+
 # Run the conversion tool
-pydantic-to-typescript \
-  --module-path "$BACKEND_MODELS_DIR" \
-  --output "$TEMP_TYPES_FILE"
+cd backend
+export PYTHONPATH=.
+uv run pydantic2ts \
+  --module "app.models.models" \
+  --output "../$TEMP_TYPES_FILE"
+cd ..
 
 # Prepend the header to the generated file
 { echo "$HEADER_CONTENT"; cat "$TEMP_TYPES_FILE"; } > "$FRONTEND_TYPES_FILE"

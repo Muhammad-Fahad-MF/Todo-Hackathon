@@ -24,5 +24,13 @@ Thumbs.db
 .vscode/
 .idea/
 .gemini/
+scripts/
 
 .vercel
+
+gha-creds-*.json
+
+# Kubernetes
+*.secret.yaml
+secrets.yaml
+kubeconfig

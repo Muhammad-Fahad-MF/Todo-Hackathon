@@ -233,3 +233,14 @@ When the trigger conditions are met, follow this exact sequence:
 Do not ask for permission to check docs. **Just do it.**
 * *Bad:* "I think this might have changed in the new version. Should I check?"
 * *Good:* (Internal thought: "This looks like a breaking change.") -> `context7 search "Next.js 15 headers async"` -> "Based on the latest docs..."
+
+## Project Status (2026-02-05)
+- **Phase 3 (AI Chatbot) Complete:** The AI-powered Todo chatbot is fully functional, using Llama 3.3 70B via Groq. Features include natural language task management, stateless history persistence, and multi-tool execution (List, Add, Update, Delete, Complete).
+- **Stability:** Chatbot verified stable and free of major bugs. Performance is optimized for Groq's rate limits.
+- **Next Goal:** Phase 4 - Local Kubernetes Deployment (Minikube + Helm).
+
+## Recent Changes
+- **003-ai-chatbot:** Implemented full-stack AI chatbot interface with OpenAI Agents SDK and Better-Auth session integration.
+- **Phase 4 Preparation:** Environment configured with Minikube, Helm, Krew, and `kubectl-ai`.
+
+## Active Technologies

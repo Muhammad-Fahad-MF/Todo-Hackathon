@@ -1,0 +1,44 @@
+openapi: 3.0.0
+info:
+  title: Kubernetes Manifests Contract
+  version: 1.0.0
+description: >
+  This is a pseudo-contract defining the expected Kubernetes resources.
+  It's not a real API, but a structural definition for the Helm chart.
+
+paths: {}
+
+components:
+  schemas:
+    Deployment:
+      type: object
+      required:
+        - metadata
+        - spec
+      properties:
+        spec:
+          type: object
+          properties:
+            template:
+              type: object
+              properties:
+                spec:
+                  type: object
+                  required:
+                    - securityContext
+                    - containers
+                  properties:
+                    securityContext:
+                      type: object
+                      properties:
+                        runAsUser:
+                          type: integer
+                          enum: [1001]
+                    containers:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - resources
+                          - livenessProbe
+                          - readinessProbe

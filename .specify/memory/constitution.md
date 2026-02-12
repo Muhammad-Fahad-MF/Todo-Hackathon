@@ -1,59 +1,72 @@
 <!--
----
-Sync Impact Report
----
-Version Change: 0.0.0 -> 1.0.0
-Modified Principles:
-- PRINCIPLE_1_NAME -> Spec-Driven & Contract-First Protocol
-- PRINCIPLE_2_NAME -> Strict Environment & Config Management
-- PRINCIPLE_3_NAME -> Backend Architecture (FastAPI + SQLModel)
-- PRINCIPLE_4_NAME -> Frontend Architecture (Next.js 16+)
-- PRINCIPLE_5_NAME -> Security & Multi-Tenancy (The 'Iron' Rule)
-- PRINCIPLE_6_NAME -> Operational Excellence
-Added Sections: None
-Removed Sections:
-- [SECTION_2_NAME]
-- [SECTION_3_NAME]
-Templates Requiring Updates:
-- ✅ .specify/templates/plan-template.md
-- ✅ .specify/templates/spec-template.md
-- ✅ .specify/templates/tasks-template.md
-Follow-up TODOs: None
+Sync Impact Report:
+- Version Change: template -> 1.0.0
+- Modified Principles: Instantiated all placeholders with Phase 4 Infrastructure Principles.
+- Added Sections: Infrastructure Stack, DevOps Workflow.
+- Templates Requiring Updates: ✅ None (plan-template checks align).
 -->
-# Todo Full-Stack Web Application Constitution
+
+# Evolution of Todo Constitution
 
 ## Core Principles
 
-### 1. Spec-Driven & Contract-First Protocol
-Contract-First: Before implementing code, ensure the API contract (endpoints, request/response models) is finalized in @spec-kit/specs/api.md.
-Atomic Implementation: Do not implement multiple features in one pass. Every implementation must be a single, verifiable task from the task list.
-Zero-Manual-Code: No code exists outside the specifications. If the code deviates from the spec, the spec is the master; update the spec first.
+### I. Infrastructure as Spec (IaSpec)
+**Non-Negotiable:** All infrastructure changes (Dockerfiles, Helm Charts, K8s Manifests) are treated as code. They must be defined in `specs/phase-4/` before implementation.
+- No `kubectl edit` or "hot-patching" the cluster.
+- Changes flow strictly: Spec → Helm Template → `helm upgrade`.
+- The "Source of Truth" is the git repository, not the cluster state.
 
-### 2. Strict Environment & Config Management
-Zero Hardcoding: No URLs, secrets, or ports in the codebase.
-Validation: Use pydantic-settings in the Backend and a validation script in the Frontend to ensure the app crashes on startup with a clear error if any required .env variable is missing.
-Local vs. Production: Support .env.example files in both /backend and /frontend. Use DATABASE_URL, BETTER_AUTH_SECRET, and API_BASE_URL as mandatory keys.
+### II. Containerization Standards
+**Security & Efficiency:**
+- Images MUST be multi-stage builds optimized for size (target <500MB).
+- **Security:** Processes MUST run as non-root users (UID > 1000).
+- **Tooling:** Use Docker AI (Gordon) for generation; if unavailable, fallback to Claude Code/Agents.
+- Base images must be minimal (e.g., `python-slim`, `node-alpine`) and pinned to specific versions (no `latest`).
 
-### 3. Backend Architecture (FastAPI + SQLModel)
-Async by Default: All database operations and route handlers must use async/await.
-Dependency Injection: Use FastAPI’s Depends for database sessions and authentication guards to ensure testability.
-Structured Logging: Use the logging module to output JSON-formatted logs. Avoid print() statements.
-Pydantic V2: Strictly use Pydantic V2 for all schemas, utilizing field_validator for data integrity.
+### III. Kubernetes Architecture
+**Production Parity:**
+- **Service Discovery:** Inter-service communication MUST use internal K8s DNS (e.g., `http://backend-service.default.svc.cluster.local`), NEVER `localhost`.
+- **Exposure:** External access via Ingress Controller (mimicking Prod) or Minikube Tunnel.
+- **Observability:** Cluster MUST have Metrics Server enabled to support `kagent` analysis and HPA.
 
-### 4. Frontend Architecture (Next.js 16+)
-Type Safety: strict: true in tsconfig.json. No any types allowed. Use Zod for client-side form validation.
-Server Components: Default to React Server Components (RSC) for data fetching to minimize client-side JavaScript.
-Auth Integration: Implement Better Auth using the middleware pattern to protect routes at the edge.
+### IV. AI-Driven Operations
+**Assisted DevOps:**
+- **Validation:** All Helm templates and complex manifests MUST be audited by `kubectl-ai` for best practices (resource limits, liveness probes).
+- **Health:** Deployment success is defined by a `kagent` health check passing with zero critical issues.
+- **Logs:** AI Agents must have access to container logs for troubleshooting.
 
-### 5. Security & Multi-Tenancy (The 'Iron' Rule)
-User Isolation: Every database query must include a .where(Task.user_id == authenticated_user_id) clause. There must be no global 'get_all_tasks' endpoint that lacks a user filter.
-JWT Integrity: The backend must verify the JWT signature using the BETTER_AUTH_SECRET before processing any request. Return 401 Unauthorized for invalid tokens.
+### V. Secret Zero Trust
+**Security:**
+- ABSOLUTELY NO secrets in `values.yaml`, `Dockerfiles`, or git-committed files.
+- Secrets (Neon DB credentials, OpenAI Keys) MUST be injected via Kubernetes Secrets or Environment Variables mapped from a secure local source (e.g., `.env` not committed).
 
-### 6. Operational Excellence
-Health Checks: Provide a /health endpoint in the backend to monitor database connectivity.
-Error Handling: Implement a global exception handler in FastAPI to return consistent JSON error responses (e.g., { "error": "Message", "code": 404 })
+### VI. AI Tool Handoff Protocol
+**External Intelligence Mandate:**
+- **Gordon (Docker AI):** The Agent **MUST NOT** generate Dockerfiles manually. It MUST:
+  1.  **Stop Execution.**
+  2.  **Generate a Prompt** for the user to paste into Gordon.
+  3.  **Wait** for user confirmation that the file has been created.
+  4.  **Verify** the output against quality standards (<500MB, non-root).
+- **kubectl-ai / kagent:** These tools SHOULD be executed directly by the Agent if CLI access is available; otherwise, the same Handoff Protocol applies.
+
+## Infrastructure Stack
+
+- **Orchestrator:** Minikube (Docker Driver)
+- **Containerization:** Docker Desktop
+- **Package Manager:** Helm 3+
+- **AI Ops:** `kubectl-ai`, `kagent`, Docker AI (Gordon)
+- **Ingress:** NGINX Ingress Controller
+
+## DevOps Workflow
+
+1.  **Spec:** Define the infrastructure change in `specs/phase-4/`.
+2.  **Plan:** Generate the Helm chart structure and resource requirements.
+3.  **Task:** Break down into atomic tasks (e.g., "Create Backend Dockerfile", "Configure Ingress").
+4.  **Implement:** Use AI tools to generate the YAML/Dockerfiles.
+5.  **Verify:** Deploy to Minikube, run `kagent` health check, and verify application functionality.
 
 ## Governance
-All pull requests and code reviews must verify compliance with this constitution. Any deviation from these principles must be justified, documented, and approved.
 
-**Version**: 1.0.0 | **Ratified**: 2026-01-06 | **Last Amended**: 2026-01-06
+Strict adherence to these principles is required for Phase 4 deliverables. Deviations (e.g., hardcoding a secret for "testing") are considered a constitution violation and must be rejected during review.
+
+**Version**: 1.0.0 | **Ratified**: 2026-02-06 | **Last Amended**: 2026-02-06
