@@ -1,10 +1,11 @@
 // frontend/src/app/api/external/[...slug]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+// Use INTERNAL_BACKEND_URL for server-to-server communication if available
+const API_URL = process.env.INTERNAL_BACKEND_URL || process.env.NEXT_PUBLIC_API_URL;
 
 if (!API_URL) {
-  throw new Error("Misconfiguration: `NEXT_PUBLIC_API_URL` is not defined.");
+  throw new Error("Misconfiguration: `INTERNAL_BACKEND_URL` or `NEXT_PUBLIC_API_URL` is not defined.");
 }
 
 async function handler(

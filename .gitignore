@@ -34,3 +34,4 @@ gha-creds-*.json
 *.secret.yaml
 secrets.yaml
 kubeconfig
+kubernetes/helm/todo-app/values.yaml

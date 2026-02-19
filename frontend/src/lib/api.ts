@@ -14,7 +14,8 @@ if (!APP_URL) {
 
 const getBaseUrl = () => {
   if (typeof window === "undefined") {
-    return API_URL;
+    // On the server, prefer the internal backend URL for cluster-internal communication
+    return process.env.INTERNAL_BACKEND_URL || API_URL;
   }
   return "/api/external";
 };
